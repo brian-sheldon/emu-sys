@@ -25,7 +25,8 @@ void setup() {
   M5.Display.println( "CP/M" );
   M5Cardputer.Display.setTextSize( 2 );
   M5Cardputer.Display.setCursor( 2, 100 );
-
+  M5.Display.print( ">>> " );
+  
   Serial.begin( 115200 );
   delay( 2000 );
   
