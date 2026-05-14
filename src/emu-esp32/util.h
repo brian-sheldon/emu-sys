@@ -191,3 +191,21 @@ void displayRuler() {
   println();
 }
 
+int utilLoopMillis = 0;
+
+void displayBlink() {
+  M5Cardputer.Display.fillCircle( 210, 30, 20, RED );
+  utilLoopMillis = millis();
+}
+
+void diskActivity() {
+  displayBlink();
+}
+
+
+void utilLoop() {
+  if ( millis() > utilLoopMillis + 250 ) {
+    M5Cardputer.Display.fillCircle( 210, 30, 20, BLACK );
+    utilLoopMillis = millis();
+  }
+}

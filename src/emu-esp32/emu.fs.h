@@ -402,6 +402,7 @@ class EmuDiskImg {
       this->seek( track, sector );
       this->file.read( buffer + addr, this->secsize );
       this->file.close();
+      diskActivity();
     }
     void readlog( uint8_t *buffer, int addr, int track = -1, int logical = -1 ) {
       if ( track < 0 ) {
@@ -422,12 +423,14 @@ class EmuDiskImg {
         sector = this->translate( logical );
       }
       this->readsec( buffer, addr, track, sector );
+      diskActivity();
     }
     void writesec( uint8_t *buffer, int addr, int track, int sector ) {
       this->file.open();
       this->seek( track, sector );
       this->file.write( buffer + addr, this->secsize );
       this->file.close();
+      diskActivity();
     }
     void test() {
       uint8_t data[128];
