@@ -430,7 +430,7 @@ class EmuDiskImg {
       this->seek( track, sector );
       this->file.write( buffer + addr, this->secsize );
       this->file.close();
-      diskActivity();
+      diskActivity( true );
     }
     void test() {
       uint8_t data[128];

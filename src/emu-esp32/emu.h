@@ -201,7 +201,7 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
       if ( val == 0 ) {
         imgs[drvs[drive.drv]].readsec( mem, addr, drive.track, drive.sector );
       } else {
-        //imgs[drvs[drive.drv]].writesec( mem, addr, drive.track, drive.sector );
+        imgs[drvs[drive.drv]].writesec( mem, addr, drive.track, drive.sector );
       }
       break;
     case 15:

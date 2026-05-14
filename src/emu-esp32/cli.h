@@ -164,10 +164,14 @@ bool io2cli = true;
 
 void ctrlLoop( int len, char ch, int cc, String hexStr ) {
   if ( hexStr == "1b5b357e" ) {         // PageUp
-    Serial.println( "io directed to cpu ..." );
+    println();
+    println( "io directed to cpu ..." );
+    print( colors[color].cpm_color );
     io2cli = false;
   } else if ( hexStr == "1b5b367e" ) {  // PageDown
-    Serial.println( "io directed to cli ..." );
+    println();
+    println( "io directed to cli ..." );
+    print( colors[color].reset );
     io2cli = true;
   } else if ( hexStr == "1b5b347e" ) {
     Serial.println( "Cpu running: false" );

@@ -27,6 +27,7 @@ struct Colors {
   char *trace_label;
   char *trace_value;
   char *ruler_color;
+  char *cpm_color;
 };
 
 bool rulerOn = false;
@@ -39,14 +40,14 @@ struct Colors colors[2] = {
     "","","","",
     "","","","",
     "","","","",
-    "","",""
+    "","","",""
   },
   {
     "\x1b[0;32m","\x1b[0;31m","\x1b[0;36m","\x1b[0;33m",
     "\x1b[0;34m","\x1b[0;36m","\x1b[0;37m","\x1b[0;31m",
     "\x1b[0;33m","\x1b[0;31m","\x1b[0;33m","\x1b[0;31m",
     "\x1b[0;34m","\x1b[0;36m","\x1b[0;33m","\x1b[0;35m",
-    "\x1b[0;33m","\x1b[0;37m","\x1b[0;37m"
+    "\x1b[0;33m","\x1b[0;37m","\x1b[0;37m","\x1b[0;36m"
   }
 };
 
