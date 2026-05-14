@@ -19,6 +19,25 @@ char defcmd[20] = "";
 #include "cmd.cpu.h"
 #include "cmd.trace.h"
 
+static void main_clrcmd() {
+  strcpy( defcmd, "" );
+}
+
+static void main_ruler() {
+  if ( cmdline.plen > 1 ) {
+    rulerColumns = dec2int( cmdline.p1 );
+  }
+  displayRuler();
+}
+
+static void main_ruleron() {
+  rulerOn = true;
+}
+
+static void main_ruleroff() {
+  rulerOn = false;
+}
+
 static void main_colors() {
   println( "\x1b[0;30mBright: 0 Color: 0" );
   println( "\x1b[0;31mBright: 0 Color: 1" );
@@ -42,6 +61,10 @@ static void help();
 static void words();
 
 cmd_entry_t cmds_main[] = {
+  { "clrcmd", main_clrcmd, "", "clears the current cmd repeated when cmdline is blank" },
+  { "ruler", main_ruler, "[columns]", "display ruler and set length" },
+  { "ruleron", main_ruleron, "", "ruler on for every cmd" },
+  { "ruleroff", main_ruleroff, "", "ruler off" },
   { "colors", main_colors, "", "display colors" },
   { "help", help, "", "detailed help for all commands" },
   { "words", words, "", "list all commands" },
@@ -179,7 +202,9 @@ void cmdLine( String cmd ) {
   if ( strcmp( buffer, "" ) == 0 ) {
     strcpy( buffer, defcmd );
   }
+  if ( rulerOn ) displayRuler();
   do_cmd( buffer );
+  if ( rulerOn ) displayRuler();
 }
 
 void setupCmd() {

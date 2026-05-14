@@ -176,3 +176,18 @@ char *hexLines( int addr, uint8_t *data, int pos, int rows, int cols ) {
   return lines;
 }
 
+void displayRuler() {
+  print( colors[color].ruler_color );
+  int tens = 1;
+  for ( int i = 1; i <= rulerColumns; i++ ) {
+    if ( ( i % 10 ) == 0 ) {
+      print( dec0( tens++ ) );
+    } else if ( ( i % 5 ) == 0 ) {
+      print( "+" );
+    } else {
+      print( "." );
+    }
+  }
+  println();
+}
+
