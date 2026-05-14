@@ -8,6 +8,8 @@
 #include "emu.fs.h"
 #include "emu.h"
 
+
+
 #include <tuple>
 
 char defcmd[20] = "";
@@ -119,6 +121,9 @@ void do_cmd( char *cmd ) {
   // process cmd line into args separated by \0
   // set pointer to each arg
   //int arg = 0;
+  for ( int i = 0; cmd[i]; i++ ) {
+    cmd[i] = tolower( (unsigned char)cmd[i] );
+  }
   bool ws = true;
   int j = 0;
   cmdline.plen = 0;

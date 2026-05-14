@@ -29,3 +29,6 @@ bool iowait = false;
 int drv = 0;
 
 int dumpaddr = 0;
+
+int port66Status = 0;
+

@@ -8,6 +8,8 @@ extern "C" {
 
 #include "z80.dis.h"
 
+void do_cmd( char *cmd );
+
 static Z80 cpu;
 
 const size_t memSize = 0x10000;
@@ -112,7 +114,7 @@ uint8_t io_read( void *ctx, uint16_t port ) {
   //Serial.print( "io_read port: " );
   //Serial.println( port );
   char ch;
-  switch ( port ) {
+  switch ( port & 0xff ) {
     case 0: // console status input available 0xff input not 0x00
       if ( queuePos > 0 ) {
         return 0xff;
@@ -164,6 +166,7 @@ uint8_t io_read( void *ctx, uint16_t port ) {
       return drive.dmahigh;
       break;
     case 0x42: // 0x00 when cmd is finished executing
+      return port66Status;
       break;
     default:
       return port & 0xff;
@@ -207,6 +210,32 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
     case 16:
       drive.dmahigh = val;
       break;
+    case 66:
+      port66Status = 0xff;
+      if ( val == 0x42 ) {
+        char cmd[100];
+        int addr = 0x80;
+        int len = mem[addr] - 1;
+        if ( len < 1 ) {
+          print( "M allows you to run commands" );
+          println( " in the monitor without leaving CP/M ..." );
+          println( "Usage M [cmd and paramters to exec]" );
+        } else {
+          addr += 2;
+          memcpy( cmd, mem + addr, len );
+          cmd[len] = '\0';
+          print( "mon exec: " );
+          print( "[" );
+          print( cmd );
+          print( "]" );
+          println();
+          do_cmd( cmd );
+        }
+        print( colors[color].reset );
+        print( "\x1b[1A" );
+      }
+      port66Status = 0x00;
+    break;
     default:
       break;
   }
