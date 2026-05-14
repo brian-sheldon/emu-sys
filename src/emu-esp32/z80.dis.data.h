@@ -8,7 +8,7 @@
 //
 //   Peter Phillips
 //
-// modified by Brian Sheldon
+// Modified and Converted to C by Brian Sheldon
 //
 
 #include <string.h>

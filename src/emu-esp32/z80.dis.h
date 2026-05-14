@@ -1,4 +1,16 @@
 
+//
+// Extracted from the emulator found at
+//
+//   https://trsjs.48k.ca/
+//
+// and written by 
+//
+//   Peter Phillips
+//
+// Modified and Converted to C by Brian Sheldon
+//
+
 #include "stdio.h"
 #include "stdint.h"
 #include "stdlib.h"
