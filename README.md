@@ -1,4 +1,24 @@
-# Currently a CP/M emulator running on the M5Cardputer
+# Currently CP/M emulator running on the M5Cardputer
+
+### Version 0.2
+
+## Requirements
+
+I have done a small amount of testing of this on both the M5Cardputer and the M5Cardputer ADV.  I have also tested in running with via the M5Launcher and it appears to work.
+
+In order to run CP/M, it will need the /emu folder at the root of this repository, in the root of the SDcard in the M5Cardputer.
+
+CP/M is only usable via a USB serial terminal.  The screen on the M5Cardputer is just too small to be practical for a CP/M terminal.  The display currently just displaces a green dot for disk read activity and a red dot for write activity.  Plus you can enter commands to be sent to the command line interface of this emulator system, the output will however only display on the serial terminal.  It does not currently pass commands to CP/M.  This is more a novelty at the moment.
+
+Any interactive ansi terminal program should work.  The Arduino IDE serial monitor will not work well with this as it lacks the interactivity and the ansi abilities.  I have included a small terminal in the root of this repository under the term folder.  It is written in nodeJS, so it can be run using the command "node term [port] [baudrate]".  It will require the "serialport" module for nodeJS installed, "npm install serialport".  I created this term program as it will auto reconnect to the com port if it disconnects, which is useful when developing.  For example, if I wish to reset the M5Cardputer, the port will reconnect, unlike other terms like Putty.
+
+## Limitations
+
+I just started writing this less than 3 weeks ago, so I have yet to put a lot of effort into error checking.  For example, entering commands that use parameters outside the limits may result in unpredictable results, maybe even a crash.  For instance, the memory address should always be in the range of 0000 to ffff, in some cases I have checks in place.  The configuration is also currently hardcoded into the source code.  Eventually, I hope to put the configuration in a config file to avoid having to rebuild the app everytime I want to change the configuration.
+
+The design and cmd names may change in the future.  As to how much time I spend on enhancing this in the near future is hard to say, especially as it is now approaching summer.
+
+## History
 
 The code here is meant to be much more general in the future.  I choose this platform for the initial development as it uses a somewhat resource limited microprocessor, but at the same time, has a number of interesting hardware features such as the screen and keyboard.
 

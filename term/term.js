@@ -1,10 +1,21 @@
 
 const { SerialPort } = require('serialport');
 
+let args = process.argv.slice( 2 );
+
+let termport = 'COM1';
+let baudrate = 115200;
+if ( args.length > 0 ) {
+  termport = args[0];
+}
+if ( args.length > 1 ) {
+  baudrate = args[1];
+}
+
 // --- Configuration ---
 const portConfig = {
-  path: 'COM1', // Update for your system
-  baudRate: 115200,
+  path: termport, // Update for your system
+  baudRate: baudrate,
   autoOpen: false // Better to control opening manually for reconnection
 };
 
