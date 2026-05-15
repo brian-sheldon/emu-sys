@@ -75,15 +75,17 @@ static void help_one( char *grp, cmd_entry_t *cmds ) {
   char buffer[80];
   memset( buffer, '=', 5 );
   buffer[5] = '\0';
+  print( colors[color].help_bar );
   print( buffer );
-  snprintf( buffer, sizeof( buffer ), "  %-s  ", grp );
+  snprintf( buffer, sizeof( buffer ), "  %s%-s  ", colors[color].help_title, grp );
   print( buffer );
   int rem = 79 - 5 - 4 - strlen( grp );
   memset( buffer, '=', rem );
   buffer[rem] = '\0';
+  print( colors[color].help_bar );
   println( buffer );
   for ( int i = 0; cmds[i].name != NULL; i++ ) {
-    snprintf( buffer, sizeof( buffer ), "%-8s  %-18s ; %s", cmds[i].name, cmds[i].params, cmds[i].desc );
+    snprintf( buffer, sizeof( buffer ), "%s%-8s  %s%-18s ; %s%s", colors[color].help_cmd, cmds[i].name, colors[color].help_params, cmds[i].params, colors[color].help_desc, cmds[i].desc );
     println( buffer );
   }
 }

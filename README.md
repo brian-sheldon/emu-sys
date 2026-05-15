@@ -1,6 +1,6 @@
 # Currently CP/M emulator running on the M5Cardputer
 
-### Version 0.2
+### Version 0.2.1 - Uploaded 2026/05/15
 
 Binary can be found in this folder /src/emu-esp32/bin.  It is also available in M5Burner, search for CP/M Emu System.
 
@@ -13,6 +13,8 @@ In order to run CP/M, it will need the /emu folder at the root of this repositor
 CP/M is only usable via a USB serial terminal.  The screen on the M5Cardputer is just too small to be practical for a CP/M terminal.  The display currently just displaces a green dot for disk read activity and a red dot for write activity.  Plus you can enter commands to be sent to the command line interface of this emulator system, the output will however only display on the serial terminal.  It does not currently pass commands to CP/M.  This is more a novelty at the moment.
 
 Any interactive ansi terminal program should work.  The Arduino IDE serial monitor will not work well with this as it lacks the interactivity and the ansi abilities.  I have included a small terminal in the root of this repository under the term folder.  It is written in nodeJS, so it can be run using the command "node term [port] [baudrate]".  It will require the "serialport" module for nodeJS installed, "npm install serialport".  I created this term program as it will auto reconnect to the com port if it disconnects, which is useful when developing.  For example, if I wish to reset the M5Cardputer, the port will reconnect, unlike other terms like Putty.
+
+![emu.help.png](img/emu.help.png)
 
 ## Limitations
 

@@ -3,6 +3,9 @@
 //
 // MIT License
 
+#include <stdint.h>
+#include <stdbool.h>
+
 int delayTime = 0;
 bool fast = true;
 bool showState = false;
@@ -21,7 +24,7 @@ struct CpuState {
   bool traceCpu;
 };
 
-CpuState cpuState = { false, false, false, false, false, false, 0x0000, 0, 0, true };
+struct CpuState cpuState = { false, false, false, false, false, false, 0x0000, 0, 0, true };
 
 bool running = false;
 bool iowait = false;

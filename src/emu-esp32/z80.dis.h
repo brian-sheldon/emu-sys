@@ -134,7 +134,7 @@ int dis( uint8_t data[], int addr ) {
       low = 256 - low;
       strReplace( ins, sizeof( ins ), "%I", "-%I" );
     }
-    strReplace( ins, sizeof( ins ), "%I", dec0( low ) );
+    strReplace( ins, sizeof( ins ), "%I", dec0( low, 0 ) );
     if ( strstr( ins, "%L" ) ) {
       low = data[addr++];
       res.bytes[ res.byt++ ] = low;

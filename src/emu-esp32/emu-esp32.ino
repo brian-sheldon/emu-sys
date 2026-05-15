@@ -6,6 +6,7 @@
 #include "M5Cardputer.h"
 
 #include "cfg.h"
+#include "out.h"
 #include "util.h"
 #include "state.h"
 #include "cmd.main.h"
