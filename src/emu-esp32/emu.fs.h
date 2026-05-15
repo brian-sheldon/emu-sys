@@ -72,19 +72,26 @@ class EmuFileUtil {
         next.close();
         next = dir.openNextFile();
       }
+      diskActivity();
       dir.close();
     }
     void mkdir( String path ) {
       SD.mkdir( path );
+      diskActivity();
+      diskActivity( true );
     }
     void rmdir( String path ) {
       SD.rmdir( path );
+      diskActivity();
+      diskActivity( true );
     }
     void mv( String srcpath, String dstpath ) {
       //
     }
     void rm( String path ) {
       SD.remove( path );
+      diskActivity();
+      diskActivity( true );
     }
     void cp( String srcpath, String dstpath ) {
       File src = SD.open( srcpath, FILE_READ );
@@ -105,6 +112,8 @@ class EmuFileUtil {
         dst.close();
         println();
         println( "Copy complete ..." );
+        diskActivity();
+        diskActivity( true );
       } else {
         println( "Error opening files ..." );
       }
@@ -142,6 +151,7 @@ class EmuFileUtil {
         src0.close();
         src1.close();
         println();
+        diskActivity();
         print( "Compare complete ... res: " );
         println( res );
       } else {
@@ -218,6 +228,7 @@ class EmuFile {
     size_t read( uint8_t *data, size_t size ) {
       if ( this->file ) {
         size_t bytes = this->file.read( data, size );
+        diskActivity();
         return bytes;
       } else {
         return 0;
@@ -227,6 +238,7 @@ class EmuFile {
       if ( this->file ) {
         this->file.write( data, size );
         this->file.flush();
+        diskActivity( true );
       }
     }
     void close() {
