@@ -2,6 +2,8 @@
 
 ### Version 0.2
 
+Binary can be found in this folder /src/emu-esp32/bin.  It is also available in M5Burner, search for CP/M Emu System.
+
 ## Requirements
 
 I have done a small amount of testing of this on both the M5Cardputer and the M5Cardputer ADV.  I have also tested in running with via the M5Launcher and it appears to work.
