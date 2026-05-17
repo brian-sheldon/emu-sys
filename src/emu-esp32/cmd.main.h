@@ -72,7 +72,7 @@ cmd_entry_t cmds_main[] = {
 };
 
 static void help_one( char *grp, cmd_entry_t *cmds ) {
-  char buffer[80];
+  char buffer[150];
   memset( buffer, '=', 5 );
   buffer[5] = '\0';
   print( colors[color].help_bar );
