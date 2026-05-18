@@ -117,6 +117,50 @@ static void disk_blksec() {
   }
 }
 
+void disk_load() {
+  int addr = 0;
+  if ( cmdline.plen > 1 ) {
+    char *path = cmdline.p1;
+    if ( cmdline.plen > 2 ) {
+      addr = hex2int( cmdline.p2 );
+    }
+    EmuFile file = EmuFile( path, true );
+    file.open();
+    size_t size = file.size();
+    if ( ( addr + size < 0xffff ) ) {
+      file.seek( 0 );
+      file.read( mem + addr, size );
+      print( "Binary size: " );
+      print( size );
+      print( " loaded at addr: " );
+      println( addr );
+    } else {
+      print( "Binary size: " );
+      print( size );
+      print( " too large to load at addr: " );
+      println( addr );
+    }
+    file.close();
+    diskActivity( true );
+  }
+}
+
+void disk_patch() {
+  mem[ 0x33 ] = 0xd3; // out ( 1 ),a
+  mem[ 0x34 ] = 0x01; //
+  mem[ 0x35 ] = 0xfe; // cp 0d
+  mem[ 0x36 ] = 0x0d; //
+  mem[ 0x37 ] = 0xc0; // ret nz
+  mem[ 0x38 ] = 0x3e; // ld a,0a
+  mem[ 0x39 ] = 0x0a; //
+  mem[ 0x3a ] = 0xd3; // out (1),a
+  mem[ 0x3b ] = 0x01; //
+  mem[ 0x3c ] = 0xc9; // ret
+  mem[ 0x49 ] = 0xdb; // in a,(1)
+  mem[ 0x4a ] = 0x01; //
+  mem[ 0x4b ] = 0xc9; // ret
+}
+
 cmd_entry_t cmds_disk[] = {
   { "b", disk_b, "", "load boot sector into zero page" },
   { "drv", disk_drv, "[index]", "current drv index or set drv index" },
@@ -126,6 +170,8 @@ cmd_entry_t cmds_disk[] = {
   { "disk", disk_disk, "[trk logsec]", "hexdump of next sector or sector at trk logsec" },
   { "trklog", disk_trklog, "trk logsec", "get blk blksec from trk logsec" },
   { "blksec", disk_blksec, "blk blksec", "get trk logsec from blk blksec" },
+  { "load", disk_load, "path [addr]", "load rom/bin into memory at addr" },
+  { "patch", disk_patch, "", "patches loaded model1.rom to redirect input/output" },
   { NULL, NULL, NULL, NULL }
 };
 
