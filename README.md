@@ -1,6 +1,6 @@
 # Currently CP/M emulator running on the M5Cardputer
 
-### Version 0.2.2 - Uploaded 2026/05/16
+### Version 0.2.3 - Uploaded 2026/05/18
 
 Binary can be found in this folder /src/emu-esp32/bin.  It is also available in M5Burner, search for CP/M Emu System.
 
