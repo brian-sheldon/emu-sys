@@ -209,47 +209,4 @@ void ctrlLoop( int len, char ch, int cc, String hexStr ) {
   }
 }
 
-//
-// ioLoop reads incoming characters from serial.  If it receives the ESC character, it tries to
-// see if it is the start of an ansi key definition, such as 1b5b44, left arrow.  If ansi end
-// character is received, it sends the entire ansi hex string to the ctrlLoop for further processing.
-// Otherwise, it sends a single character, including a lone ESC character, to the crtlLoop for processing.
-// I am not sure if this loop correctly captures all ansi keyboard characters, but it does capture the
-// ones in use by the cli at this point.
-//
-
-void ioLoop() {
-  String ansiEnd = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~";
-  if ( Serial.available() ) {
-    int len = 0;
-    char ch;
-    int cc;
-    String hx;
-    String hexStr = "";
-    bool ansi = false;
-    unsigned long end = 0;
-    unsigned long timeout = 10000;
-    do {
-      ch = Serial.read();
-      if ( ch != 0xff ) {
-        cc = (int)ch;
-        hx = hex2( cc );
-        hexStr += hx;
-        len++;
-        if ( cc == 0x1b ) {
-          ansi = true;
-          end = micros() + timeout;
-        }
-        if ( ansiEnd.indexOf( ch ) != -1 ) {
-          ansi = false;
-        }
-      }
-      if ( micros() > end ) {
-        ansi = false;
-      }
-    } while ( ansi );
-    if ( showHex ) Serial.println( hexStr );
-    ctrlLoop( len, ch, cc, hexStr );
-  }
-}
 

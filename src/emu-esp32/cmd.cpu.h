@@ -199,9 +199,7 @@ cmd_entry_t cmds_cpu[] = {
   { "stopset", cpu_stopset, "", "stopat set" },
   { "stopat", cpu_stopat, "[addr]", "stopat addr" },
   { "pc", cpu_pc ,"[addr]" , "show or set reg pc" },
-  { "on", cpu_on ,"" , "turn cpu on" },
-  { "1b5b317e", cpu_on ,"" , "end key - turn cpu on" },
-  { "off", cpu_off ,"" , "turn cpu off" },
-  { "1b5b347e", cpu_off ,"" , "home key - turn cpu off" },
+  { "on", cpu_on ,"" , "turn cpu on (Home key)" },
+  { "off", cpu_off ,"" , "turn cpu off (End key)" },
   { NULL, NULL, NULL, NULL }
 };

@@ -287,25 +287,27 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
 }
 
 uint8_t ops[] = {
-  0x01, 0x00, 0x00,       // 10 ld bc,0
-  0x11, 0x00, 0x00,       // 10 ld de,0
-  0x21, 0x00, 0x00,       // 10 ld hl,0
+  0x01, 0x00, 0x00,       // 00 10 ld bc,0
+  0x11, 0x00, 0x00,       // 03 10 ld de,0
+  0x21, 0x00, 0x00,       // 06 10 ld hl,0
   // loop avgs ~ 122 ticks, which at 5.20 mhz = a count of about $1000000 every 6 min 33 sec
   // so doing cli cmd d at this time will show 00f0  xxxx 0001 0000, xxxx as this portion changes fast
   // displaying state regularly will show a slightly higher mhz as this value is based only on time
   // running the while loop surrounding the emulation code
-  0xed, 0x43, 0xf0, 0x00, // 20 ld ($00f0),bc
-  0xed, 0x53, 0xf2, 0x00, // 20 ld ($00f2),de
-  0xed, 0x63, 0xf4, 0x00, // 20 ld ($00f4),hl
-  0x03,                   //  6 inc bc
-  0x78,                   //  4 ld a,b
-  0xb1,                   //  4 or c
-  0x20, 0x03,             // 12/7 jr nz,6
-  0x13,                   //  6 inc de
-  0x7a,                   //  4 ld a,d
-  0xb3,                   //  4 or e
-  0x20, 0x01,             // 12/7 jr nz,1
-  0x23,                   //  6 inc hl
+  0xed, 0x43, 0xf0, 0x00, // 09 20 ld ($00f0),bc
+  0xed, 0x53, 0xf2, 0x00, // 0d 20 ld ($00f2),de
+  0xed, 0x63, 0xf4, 0x00, // 11 20 ld ($00f4),hl
+  0x03,                   // 15 6 inc bc
+  0x78,                   // 16 4 ld a,b
+  0xb1,                   // 17 4 or c
+  0x20, 0x0a,             // 18 12/7 jr nz,$0024
+  0x3e, 0x2e,             // 1a 7 ld a,'.'
+  0xd3, 0x01,             // 1c out ($1),a
+  0x13,                   // 1e 6 inc de
+  0x7a,                   // 1f 4 ld a,d
+  0xb3,                   // 20 4 or e
+  0x20, 0x01,             // 21 12/7 jr nz,1
+  0x23,                   // 23 6 inc hl
   //0xdb, 0x01,             // 11 in a,(0x01)
   //0xd3, 0x02,             // 11 out (0x02),a
   0xc3, 0x09, 0x00,       // 10 jp 9

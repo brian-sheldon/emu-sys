@@ -27,6 +27,13 @@ static void main_clrcmd() {
   strcpy( defcmd, "" );
 }
 
+static void main_pause() {
+  if ( cmdline.plen > 1 ) {
+    int pause = dec2int( cmdline.p1 );
+    delay( pause );
+  }
+}
+
 static void main_ruler() {
   if ( cmdline.plen > 1 ) {
     rulerColumns = dec2int( cmdline.p1 );
@@ -66,6 +73,7 @@ static void words();
 
 cmd_entry_t cmds_main[] = {
   { "clrcmd", main_clrcmd, "", "clears defcmd, cmd that runs if just enter hit" },
+  { "pause", main_pause, "milliseconds", "pause for time given" },
   { "ruler", main_ruler, "[columns]", "display ruler and set length" },
   { "ruleron", main_ruleron, "", "ruler on for every cmd" },
   { "ruleroff", main_ruleroff, "", "ruler off" },

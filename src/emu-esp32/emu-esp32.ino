@@ -11,6 +11,7 @@
 #include "state.h"
 #include "cmd.main.h"
 #include "cli.h"
+#include "./io.h"
 
 void setup() {
   auto cfg = M5.config();
