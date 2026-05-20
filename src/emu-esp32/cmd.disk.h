@@ -171,7 +171,7 @@ cmd_entry_t cmds_disk[] = {
   { "trklog", disk_trklog, "trk logsec", "get blk blksec from trk logsec" },
   { "blksec", disk_blksec, "blk blksec", "get trk logsec from blk blksec" },
   { "load", disk_load, "path [addr]", "load rom/bin into memory at addr" },
-  { "patch", disk_patch, "", "patches loaded model1.rom to redirect input/output" },
+  { "patch", disk_patch, "", "patches model1.rom to redirect io to serial" },
   { NULL, NULL, NULL, NULL }
 };
 

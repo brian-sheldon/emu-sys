@@ -56,6 +56,12 @@ void print( char *str ) {
   do_print( str );
 }
 
+//void print( char ch ) {
+  //char buffer[2];
+  //snprintf( buffer, sizeof( buffer ), "%c", ch );
+  //do_print( buffer );
+//}
+
 void print( int v ) {
   //printf( "%d", v );
   char buffer[100];

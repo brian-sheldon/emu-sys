@@ -174,7 +174,7 @@ void cpu_step() {
         print( "   " );
         dis( mem, cpu.pc );
       }
-      ticks += steps();
+      ticks += steps( 1 );
       if ( each ) {
         cpu_state();
         if ( loop > 0 && loop < loops ) {

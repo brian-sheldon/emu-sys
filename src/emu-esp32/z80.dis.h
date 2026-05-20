@@ -26,6 +26,7 @@ struct Disassem {
   char ins[8];
 };
 
+
 void strReplace( char *str, size_t str_size, const char *old_sub, const char *new_sub ) {
   char *pos = strstr(str, old_sub);
   if (!pos) return; // Substring not found
@@ -33,6 +34,8 @@ void strReplace( char *str, size_t str_size, const char *old_sub, const char *ne
   size_t new_len = strlen(new_sub);
   size_t tail_len = strlen(pos + old_len) + 1; // +1 to include null terminator
   // show check if can fit
+  //if ( str_size < ( strlen( pos ) + new_sub - old_sub + 1 ) ) return;
+  if ( str_size < 1 ) return;
   memmove(pos + new_len, pos + old_len, tail_len);
   memcpy(pos, new_sub, new_len);
 }
@@ -66,8 +69,8 @@ char *hex4( int v ) {
 */
 
 int dis( uint8_t data[], int addr ) {
-  const char *ixy[] = { "ix", "iy" };
-  Disassem res;
+  //const char *ixy[] = { "ix", "iy" };
+  struct Disassem res;
   res.addr = addr;
   res.op = 0;
   res.byt = 0;
@@ -77,7 +80,7 @@ int dis( uint8_t data[], int addr ) {
   res.opc[ res.op ] = op0;
   res.bytes[ res.byt++ ] = res.opc[ res.op ];
   strcpy( ins, major[ res.opc[ res.op++ ] ] );
-  int ind;
+  int ind = 0;
   while ( strlen( ins ) == 1 ) {
     ind = atoi( ins );
     if ( ind == 3 ) {
@@ -89,7 +92,6 @@ int dis( uint8_t data[], int addr ) {
     strcpy( ins, minor[ ind ][ res.opc[ res.op++ ] ] );
   }
   int high, low, sb, absaddr;
-  char *i;
   if ( ind == 3 ) { // dd cb or fd cb
     if ( strstr( ins, "(HL)" ) ) {
       strcpy( ins, "undefined" );
@@ -125,7 +127,7 @@ int dis( uint8_t data[], int addr ) {
     absaddr = addr + sb;
     strReplace( ins, sizeof( ins ), "%J", "$%J" );
     strReplace( ins, sizeof( ins ), "%J", hex4( absaddr ) );
-  } else if ( i = strstr( ins, "%I" ) ) { // ind_l
+  } else if ( strstr( ins, "%I" ) ) { // ind_l
     low = data[addr++];
     res.bytes[ res.byt++ ] = low;
     if ( low < 128 ) {
@@ -141,18 +143,18 @@ int dis( uint8_t data[], int addr ) {
       strReplace( ins, sizeof( ins ), "%L", "$%L" );
       strReplace( ins, sizeof( ins ), "%L", hex2( low ) );
     }
-  } else if ( i = strstr( ins, "%C" ) ) { // call
+  } else if ( strstr( ins, "%C" ) ) { // call
     low = data[addr++];
     high = data[addr++];
     res.bytes[ res.byt++ ] = low;
     res.bytes[ res.byt++ ] = high;
     strReplace( ins, sizeof( ins ), "%C", "$%C" );
     strReplace( ins, sizeof( ins ), "%C", hex4( high<<8 | low ) );
-  } else if ( i = strstr( ins, "%R" ) ) { // rst
+  } else if ( strstr( ins, "%R" ) ) { // rst
     low = data[addr++];
     res.bytes[ res.byt++ ] = low;
     strReplace( ins, sizeof( ins ), "%R", hex2( low ) );
-  } else if ( i = strstr( ins, "%P" ) ) { // port
+  } else if ( strstr( ins, "%P" ) ) { // port
     low = data[addr++];
     res.bytes[ res.byt++ ] = low;
     strReplace( ins, sizeof( ins ), "%P", "$%P" );

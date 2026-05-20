@@ -19,6 +19,10 @@ char defcmd[20] = "";
 #include "cmd.cpu.h"
 #include "cmd.trace.h"
 
+static void main_version() {
+  println( "Version: 0.2.4-alpha" );
+}
+
 static void main_clrcmd() {
   strcpy( defcmd, "" );
 }
@@ -61,11 +65,12 @@ static void help();
 static void words();
 
 cmd_entry_t cmds_main[] = {
-  { "clrcmd", main_clrcmd, "", "clears the current cmd repeated when cmdline is blank" },
+  { "clrcmd", main_clrcmd, "", "clears defcmd, cmd that runs if just enter hit" },
   { "ruler", main_ruler, "[columns]", "display ruler and set length" },
   { "ruleron", main_ruleron, "", "ruler on for every cmd" },
   { "ruleroff", main_ruleroff, "", "ruler off" },
   { "colors", main_colors, "", "display colors" },
+  { "version", main_version, "", "display version" },
   { "help", help, "", "detailed help for all commands" },
   { "words", words, "", "list all commands" },
   { NULL, NULL, NULL, NULL }

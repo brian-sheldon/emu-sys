@@ -1,10 +1,18 @@
-extern "C" {
+#ifdef ESP32
+  extern "C" {
+    #include "z80.h"
+  }
+#else
   #include "z80.h"
-}
+#endif
 
 // Copyright (C) 2026 Brian Sheldon
 //
 // MIT License
+
+//
+// The #ifdef are mostly being used to stage code as it is being generalized to run on other platforms
+//
 
 #include "z80.dis.h"
 
@@ -12,35 +20,47 @@ void do_cmd( char *cmd );
 
 static Z80 cpu;
 
-const size_t memSize = 0x10000;
-const size_t memMask = 0xffff;
+#define MEM_SIZE 0x10000
+
+#ifdef ESP32 
+  #define MEM_TRACE_SIZE 0x4000
+  #define CPU_TRACE_SIZE 0x4000
+#else
+  #define MEM_TRACE_SIZE 0x10000
+  #define CPU_TRACE_SIZE 0x10000
+#endif
+
+#define SYS_INP_QUEUE_SIZE 256
+
+const size_t memSize = MEM_SIZE;
+const size_t memMask = MEM_SIZE - 1;
 const size_t dataSize = 0x100;
 const size_t dataMask = 0xff;
 
-byte mem[ memSize ];
-byte ports[256];
+uint8_t mem[ MEM_SIZE ];
+uint8_t ports[256];
 
 //
 // Trace vars and funcs
 //
 
-const size_t traceCpuLen = 0x4000;
-size_t traceCpuStart = 0x0000;
-uint16_t traceCpu[ traceCpuLen ];
+const size_t traceCpuLen = CPU_TRACE_SIZE;
+uint16_t traceCpuStart = 0x0000;
+uint8_t traceCpu[ CPU_TRACE_SIZE ];
 
-const size_t traceMemLen = 0x4000;
-size_t traceMemStart = 0x0000;
-uint8_t traceMemRd[ traceMemLen ];
-uint8_t traceMemWr[ traceMemLen ];
+const size_t traceMemLen = MEM_TRACE_SIZE;
+uint16_t traceMemStart = 0x0000;
+uint8_t traceMemRd[ MEM_TRACE_SIZE ];
+uint8_t traceMemWr[ MEM_TRACE_SIZE ];
 
 void traceCpuClr() {
-  for ( int i = 0; i < traceCpuLen; i++ ) {
+  for ( size_t i = 0; i < traceCpuLen; i++ ) {
     traceCpu[i] = 0;
   }
 }
 
 void traceMemClr() {
-  for ( int i = 0; i < traceMemLen; i++ ) {
+  for ( size_t i = 0; i < traceMemLen; i++ ) {
     traceMemRd[i] = 0;
     traceMemWr[i] = 0;
   }
@@ -50,12 +70,13 @@ void traceMemClr() {
 //
 //
 
-const int queueSize = 256;
+const int queueSize = SYS_INP_QUEUE_SIZE;
 int queuePos = 0;
-char queue[queueSize];
+char queue[ SYS_INP_QUEUE_SIZE ];
 
 //int drv = 0;
 int drvs[] = {0,1,2,3,4,5,6,7,8,9};
+#ifdef ESP32
 EmuDiskImg imgs[] = {
   EmuDiskImg( "/emu/disks/cpm22-1.dsk" ),
   EmuDiskImg( "/emu/disks/cpm22-2.dsk" ),
@@ -68,20 +89,34 @@ EmuDiskImg imgs[] = {
   EmuDiskImg( "" ),
   EmuDiskImg( "" )
 };
+#else
+char *imgs[] = {
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  ""
+};
+#endif
 
 struct EmuDrive {
-  int sides = 1;
-  int tracks = 77;
-  int sectors = 26;
-  int secsize = 128;
-  int drv = 0;
-  int track = 0;
-  int sector = 1;
-  int dmalow = 0;
-  int dmahigh = 0;
+  int sides;
+  int tracks;
+  int sectors;
+  int secsize;
+  int drv;
+  int track;
+  int sector;
+  int dmalow;
+  int dmahigh;
 };
 
-EmuDrive drive;
+struct EmuDrive drive = { 1, 77, 26, 128, 0, 0, 1, 0, 0 };
 
 uint8_t mem_read( void *ctx, uint16_t addr ) {
   (void)ctx;
@@ -176,15 +211,19 @@ uint8_t io_read( void *ctx, uint16_t port ) {
 }
 
 void io_write( void *ctx, uint16_t port, uint8_t val ) {
+  (void)ctx;
   port = port & 0xff;
+  char ch[2];
+  snprintf( ch, sizeof( ch ), "%c", val );
   //Serial.print( "io_write port: " );
   //Serial.print( port );
   //Serial.print( " val: " );
   //Serial.println( val );
-  int status, addr;
+  int status;
+  size_t addr;
   switch ( port & 0xff ) {
     case 1:
-      Serial.print( (char)val );
+      print( ch );
       break;
     case 10: // FDC drive
       drive.drv = val;
@@ -198,11 +237,13 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
     case 13: // FDC cmd
       status = 0;
       addr = drive.dmahigh * 256 + drive.dmalow;
+      #ifdef ESP32
       if ( val == 0 ) {
         imgs[drvs[drive.drv]].readsec( mem, addr, drive.track, drive.sector );
       } else {
         imgs[drvs[drive.drv]].writesec( mem, addr, drive.track, drive.sector );
       }
+      #endif
       break;
     case 15:
       drive.dmalow = val;
@@ -228,8 +269,10 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
           print( "[" );
           print( cmd );
           print( "]" );
-          println();
+          println( "" );
+          #ifdef ESP32
           do_cmd( cmd );
+          #endif
         }
         print( colors[color].reset );
         print( "\x1b[1A" );
@@ -239,9 +282,11 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
     default:
       break;
   }
+  if ( status ) {} // use variable to avoid compiler warning
+  if ( addr ) {} // use variable to avoid compilter warning
 }
 
-byte ops[] = {
+uint8_t ops[] = {
   0x01, 0x00, 0x00,       // 10 ld bc,0
   0x11, 0x00, 0x00,       // 10 ld de,0
   0x21, 0x00, 0x00,       // 10 ld hl,0
@@ -261,8 +306,8 @@ byte ops[] = {
   0xb3,                   //  4 or e
   0x20, 0x01,             // 12/7 jr nz,1
   0x23,                   //  6 inc hl
-  0xdb, 0x01,             // 11 in a,(0x01)
-  0xd3, 0x02,             // 11 out (0x02),a
+  //0xdb, 0x01,             // 11 in a,(0x01)
+  //0xd3, 0x02,             // 11 out (0x02),a
   0xc3, 0x09, 0x00,       // 10 jp 9
   0x00, 0x00, 0x00,
   0x00, 0x00, 0x00,
@@ -274,14 +319,13 @@ byte ops[] = {
 };
 
 void setupMem() {
-  int i;
-  for ( int i = 0; i < 65536; i++ ) {
+  for ( size_t i = 0; i < 65536; i++ ) {
     if ( i < 40 ) {
       mem[i] = ops[i];
     } else {
       mem[i] = 0;
     }
-    if ( i >= 0 && i < traceCpuLen ) {
+    if ( i < traceCpuLen ) {
       traceCpu[i] = 0;
     }
   }
@@ -313,6 +357,7 @@ unsigned long lastTime = 0;
 long long lastTicks = 0;
 float mhz = 0.0;
 
+/*
 String status() {
   String s = "";
   s += "status mhz: ";
@@ -321,13 +366,14 @@ String status() {
   s += String( running );
   return s;
 }
+*/
 
-int steps( int n = 1 ) {
+int steps( int n ) {
   int ticks = 0;
   int steps = 0;
   // start timer
   while ( cpuState.running && ( ticks < n ) ) {
-    int pc = cpu.pc;
+    uint16_t pc = cpu.pc;
     if ( cpuState.stopset && cpu.pc == cpuState.stopat ) {
       cpuState.stopped = true;
       cpuState.running = false;
@@ -342,7 +388,7 @@ int steps( int n = 1 ) {
         if ( cpuState.traceCpu ) {
           if ( pc > traceCpuStart && pc < traceCpuStart + traceCpuLen ) {
             pc = pc - traceCpuStart;
-            if ( traceCpu[pc] < 0xffff ) {
+            if ( traceCpu[pc] < 0xff ) {
               traceCpu[pc]++;
             }
           }
@@ -359,10 +405,11 @@ int steps( int n = 1 ) {
 
 void cpu_frame() {
   int clocks = 50000;
+  int ticks = 0;
   if ( cpuState.iowait ) {
     if ( queuePos > 0 ) {
       char ch = queue[0];
-      for ( int i = 0; i < queuePos; i++ ) {
+      for ( int i = 1; i < queuePos; i++ ) {
         queue[i-1] = queue[i];
       }
       queuePos--;
@@ -372,8 +419,9 @@ void cpu_frame() {
     }
   }
   if ( cpuState.running && cpuState.on ) {
-    int ticks = steps( clocks );
+    ticks = steps( clocks );
   }
+  if ( ticks ) {} // use variable to avoid compiler warning
   //frames++;
 }
 
@@ -384,7 +432,7 @@ void loopEmu() {
     if ( cpuState.iowait ) {
       if ( queuePos > 0 ) {
         char ch = queue[0];
-        for ( int i = 0; i < queuePos; i++ ) {
+        for ( int i = 1; i < queuePos; i++ ) {
           queue[i-1] = queue[i];
         }
         queuePos--;
@@ -407,6 +455,7 @@ void loopEmu() {
   //
   // calculate the Mhz
   //
+  #ifdef ESP32
   unsigned long currTime = micros();
   unsigned long diffTime = currTime - lastTime;
   long diffTicks = ticks - lastTicks;
@@ -415,6 +464,7 @@ void loopEmu() {
   }
   lastTime = currTime;
   lastTicks = ticks;
+  #endif
 }
 
 
