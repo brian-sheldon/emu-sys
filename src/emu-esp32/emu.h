@@ -223,7 +223,20 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
   size_t addr;
   switch ( port & 0xff ) {
     case 1:
-      print( ch );
+      if ( val == 0x0d ) {
+        //#ifdef ESP32
+          //print( ch );
+        //#else
+          print( "\r\n" );
+        //#endif
+      } else if ( val == 0x0a ) {
+        #ifdef ESP32
+          //print( ch );
+        #else
+        #endif
+      } else {
+        print( ch );
+      }
       break;
     case 10: // FDC drive
       drive.drv = val;

@@ -127,7 +127,11 @@ void disk_patch() {
   mem[ 0x33 ] = 0xd3; // out ( 1 ),a
   mem[ 0x34 ] = 0x01; //
   mem[ 0x35 ] = 0xfe; // cp 0d
-  mem[ 0x36 ] = 0x0d; //
+  //#ifdef ESP32
+    mem[ 0x36 ] = 0x0d; //
+  //#else
+    mem[ 0x36 ] = 0x0a; //
+  //#endif
   mem[ 0x37 ] = 0xc0; // ret nz
   mem[ 0x38 ] = 0x3e; // ld a,0a
   mem[ 0x39 ] = 0x0a; //
@@ -137,6 +141,16 @@ void disk_patch() {
   mem[ 0x49 ] = 0xdb; // in a,(1)
   mem[ 0x4a ] = 0x01; //
   mem[ 0x4b ] = 0xc9; // ret
+}
+
+void disk_trs() {
+  #ifdef ESP32
+    char path[] = "/emu/roms/model1.rom";
+  #else
+    char path[] = "../../sdcard/emu/roms/model1.rom";
+  #endif
+  disk_load_bin( mem, sizeof( mem ), 0, path );
+  disk_patch();
 }
 
 void test_cpm () {
@@ -188,6 +202,7 @@ cmd_entry_t cmds_disk[] = {
   { "trklog", disk_trklog, "trk logsec", "get blk blksec from trk logsec" },
   { "blksec", disk_blksec, "blk blksec", "get trk logsec from blk blksec" },
   { "load", disk_load, "path [addr]", "load rom/bin into memory at addr" },
+  { "trs", disk_trs, "path [addr]", "trs load and patch" },
   { "patch", disk_patch, "", "patches model1.rom to redirect io to serial" },
 
   { "testcpm", test_cpm, "", "perform tests of disk routines" },
