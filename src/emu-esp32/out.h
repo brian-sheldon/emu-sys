@@ -93,3 +93,7 @@ void println( int v ) {
   println();
 }
 
+void printclr( char *clr ) {
+  print( clr );
+}
+

@@ -1,9 +1,14 @@
 
+// Copyright (C) 2026 Brian Sheldon
+//
+// MIT License
+
+#ifndef ESP32
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <termios.h>
-//#include <iostream>
 #include <string.h>
 #include <time.h>
 
@@ -22,8 +27,23 @@ void resetTermios( void ) {
   tcsetattr( 0, TCSANOW, &old );
 }
 
-void loop() {
+#endif
+
+//
+// ioLoop reads incoming characters from serial.  If it receives the ESC character, it tries to
+// see if it is the start of an ansi key definition, such as 1b5b44, left arrow.  If ansi end
+// character is received, it sends the entire ansi hex string to the ctrlLoop for further processing.
+// Otherwise, it sends a single character, including a lone ESC character, to the crtlLoop for processing.
+// I am not sure if this loop correctly captures all ansi keyboard characters, but it does capture the
+// ones in use by the cli at this point.
+//
+
+
+void ioLoop() {
   const char ansiEnd[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~";
+  #ifdef ESP32
+    if ( ! Serial.available() ) return;
+  #endif
   int len = 0;
   int num = 0;
   char buffer[20];
@@ -32,34 +52,57 @@ void loop() {
   char hx[3];
   char hexStr[20] = "";
   bool ansi = false;
-  unsigned long end = 0;
-  unsigned long timeout = 5;
-  struct timespec start, now;
+  #ifdef ESP32
+    int start = 0;
+    int now = 0;
+  #else
+    struct timespec start, now;
+  #endif
   do {
-    num = read( 0, &buffer, 1 );
+    #ifdef ESP32
+      cc = Serial.read();
+      if ( cc >= 0 ) {
+        num = 1;
+      } else {
+        num = 0;
+      }
+    #else
+      num = read( 0, &buffer, 1 );
+      if ( num > 0 ) {
+        cc = buffer[0];
+      }
+    #endif
     if ( num > 0 ) {
-      cc = buffer[0];
       ch = (char)cc;
       snprintf( hx, sizeof( hx ), "%02x", cc );
       strcat( hexStr, hx );
       len++;
       if ( cc == 0x1b ) {
-        clock_gettime( CLOCK_MONOTONIC, &start );
+        #ifdef ESP32
+          start = micros();
+        #else
+          clock_gettime( CLOCK_MONOTONIC, &start );
+        #endif
         ansi = true;
       }
       if ( strchr( ansiEnd, ch ) ) {
         ansi = false;
       }
     }
-    clock_gettime( CLOCK_MONOTONIC, &now );
-    if ( ( now.tv_nsec - start.tv_nsec ) > 20000 ) ansi = false;
+    if ( ansi ) {
+    #ifdef ESP32
+      now = micros();
+      if ( ( now - start ) > 30000 ) ansi = false;
+    #else
+      clock_gettime( CLOCK_MONOTONIC, &now );
+      if ( ( now.tv_nsec - start.tv_nsec ) > 30000 ) ansi = false;
+    #endif
+    }
   } while ( ansi );
   if ( len > 0 ) {
-    printf( "%s\n", hexStr );
+    if ( show_hex ) println( hexStr );
+    ctrlLoop( len, ch, cc, hexStr );
   }
 }
-
-
-
 
 

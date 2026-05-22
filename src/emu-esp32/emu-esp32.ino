@@ -10,7 +10,8 @@
 #include "util.h"
 #include "state.h"
 #include "cmd.main.h"
-#include "cli.h"
+#include "./cli.h"
+#include "./ctrl.h"
 #include "./io.h"
 
 void setup() {
@@ -67,7 +68,9 @@ void loop() {
       }
       if ( status.enter ) {
         println();
-        cmdLine( keyData );
+        char buffer[100];
+        keyData.toCharArray( buffer, sizeof( buffer ) );
+        cmdLine( buffer );
         doPrompt();
         M5Cardputer.Display.fillRect( 2, 100, 135, 240, BLACK );
         M5.Display.print( "          " );

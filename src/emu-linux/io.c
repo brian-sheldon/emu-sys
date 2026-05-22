@@ -4,7 +4,7 @@
 int main() {
   initTermios( 0 );
   while ( true ) {
-    loop();
+    ioLoop();
   }
   resetTermios();
   return 0;
