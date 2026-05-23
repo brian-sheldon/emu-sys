@@ -174,7 +174,7 @@ void do_cmd( char *cmd ) {
   // set pointer to each arg
   //int arg = 0;
   for ( int i = 0; cmd[i]; i++ ) {
-    cmd[i] = tolower( (unsigned char)cmd[i] );
+    //cmd[i] = tolower( (unsigned char)cmd[i] );
   }
   bool ws = true;
   int j = 0;

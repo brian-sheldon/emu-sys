@@ -221,17 +221,9 @@ void cpu_next() {
   dis( mem, cpu.pc );
 }
 
-void cpu_step() {
-  bool each = false;
+void cpu_steps( int loops, bool each ) {
   int loop = 0;
-  int loops = 1;
   int ticks = 0;
-  if ( cmdline.plen > 1 ) {
-    loops = dec2int( cmdline.p1 );
-  }
-  if ( cmdline.plen > 2 ) {
-    each = true;
-  }
   if ( cpuState.on == false && cpuState.iowait == false && cpuState.stopped == false && cpuState.halted == false ) {
     cpuState.running = true;
   } else {
@@ -256,7 +248,83 @@ void cpu_step() {
     }
   }
   if ( ! each ) cpu_state();
+}
+
+void cpu_step() {
+  bool each = false;
+  int loop = 0;
+  int loops = 1;
+  int ticks = 0;
+  if ( cmdline.plen > 1 ) {
+    loops = dec2int( cmdline.p1 );
+  }
+  if ( cmdline.plen > 2 ) {
+    each = true;
+  }
+  cpu_steps( loops, each );
   strcpy( defcmd, cmdline.p0 );
+}
+
+void cpu_step100() {
+  cpu_steps( 100, false );
+  strcpy( defcmd, cmdline.p0 );
+}
+
+void cpu_step1k() {
+  cpu_steps( 1000, false );
+  strcpy( defcmd, cmdline.p0 );
+}
+
+void cpu_step10k() {
+  cpu_steps( 10000, false );
+  strcpy( defcmd, cmdline.p0 );
+}
+
+void cpu_step100k() {
+  cpu_steps( 100000, false );
+  strcpy( defcmd, cmdline.p0 );
+}
+
+void cpu_step1m() {
+  cpu_steps( 1000000, false );
+  strcpy( defcmd, cmdline.p0 );
+}
+
+void cpu_sendkey( char ch ) {
+  if ( queuePos < queueSize ) {
+    #ifndef ESP32
+      if ( ch == 0x0a ) {
+        ch = 0x0d;
+      }
+    #endif
+    queue[queuePos++] = ch;
+  }
+}
+
+void cpu_sendchrs( char *chrs, bool space ) {
+  if ( space ) cpu_sendkey( ' ' );
+  int len = strlen( chrs );
+  for ( int i = 0; i < len; i++ ) {
+    char ch = chrs[i];
+    cpu_sendkey( ch );
+  }
+}
+
+void cpu_sendcr() {
+  cpu_sendkey( 0x0d );
+}
+
+void cpu_sendstr() {
+  if ( cmdline.plen > 1 ) cpu_sendchrs( cmdline.p1, false );
+  if ( cmdline.plen > 2 ) cpu_sendchrs( cmdline.p2, true );
+  if ( cmdline.plen > 3 ) cpu_sendchrs( cmdline.p3, true );
+  if ( cmdline.plen > 4 ) cpu_sendchrs( cmdline.p4, true );
+  if ( cmdline.plen > 5 ) cpu_sendchrs( cmdline.p5, true );
+}
+
+void cpu_sendln() {
+  cpu_sendstr();
+  cpu_sendcr();
 }
 
 cmd_entry_t cmds_cpu[] = {
@@ -264,6 +332,14 @@ cmd_entry_t cmds_cpu[] = {
   { "d", cpu_d, "[addr]", "mem dump at next addr or given addr" },
   { "l", cpu_l ,"[addr]" , "disassembly listing for addr" },
   { "step", cpu_step ,"[steps]" , "cpu step once or given steps" },
+  { "step100", cpu_step100 ,"" , "cpu step 100" },
+  { "step1k", cpu_step1k ,"" , "cpu step 1,000" },
+  { "step10k", cpu_step10k ,"" , "cpu step 10,000" },
+  { "step100k", cpu_step100k ,"" , "cpu step 100,000" },
+  { "step1m", cpu_step1m ,"" , "cpu step 1,000,000" },
+  { "sendcr", cpu_sendcr, "", "send cr key to system" },
+  { "sendstr", cpu_sendstr, "str", "send str to system" },
+  { "sendln", cpu_sendln, "str", "send str to system" },
   { "state", cpu_state ,"" , "cpu state" },
   { "next", cpu_next ,"" , "show next instruction to run" },
   { "stopclr", cpu_stopclr, "", "stopat clr" },
