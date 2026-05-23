@@ -130,7 +130,7 @@ void disk_patch() {
   //#ifdef ESP32
     mem[ 0x36 ] = 0x0d; //
   //#else
-    mem[ 0x36 ] = 0x0a; //
+    //mem[ 0x36 ] = 0x0a; //
   //#endif
   mem[ 0x37 ] = 0xc0; // ret nz
   mem[ 0x38 ] = 0x3e; // ld a,0a

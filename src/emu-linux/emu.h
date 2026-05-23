@@ -225,15 +225,17 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
     case 1:
       if ( val == 0x0d ) {
         //#ifdef ESP32
-          //print( ch );
+          print( ch );
         //#else
-          print( "\r\n" );
+          //println( "" );
         //#endif
+        //println( "0d" );
       } else if ( val == 0x0a ) {
-        #ifdef ESP32
-          //print( ch );
-        #else
-        #endif
+        //println( "0a" );
+        //#ifdef ESP32
+          print( ch );
+        //#else
+        //#endif
       } else {
         print( ch );
       }
