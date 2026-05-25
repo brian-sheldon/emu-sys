@@ -99,7 +99,7 @@ long pnum( char *word, int radix ) {
       val = -val;
     }
   } else {
-    val = NULL;
+    val = 0;
   }
   //printf( "word: %s radix: %d sign: %c success: %d rem: %ld\n", word, radix, sign, success, val );
   return val;
