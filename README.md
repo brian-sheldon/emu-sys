@@ -1,6 +1,6 @@
 # Currently CP/M emulator running on the M5Cardputer
 
-### Version 0.2.3 - Uploaded 2026/05/18
+### Version 0.3.x - Uploaded 2026/05/25 in progress, no updated binary
 
 Binary can be found in this folder /src/emu-esp32/bin.  It is also available in M5Burner, search for CP/M Emu System.
 
@@ -14,11 +14,28 @@ CP/M is only usable via a USB serial terminal.  The screen on the M5Cardputer is
 
 Any interactive ansi terminal program should work.  The Arduino IDE serial monitor will not work well with this as it lacks the interactivity and the ansi abilities.  I have included a small terminal in the root of this repository under the term folder.  It is written in nodeJS, so it can be run using the command "node term [port] [baudrate]".  It will require the "serialport" module for nodeJS installed, "npm install serialport".  I created this term program as it will auto reconnect to the com port if it disconnects, which is useful when developing.  For example, if I wish to reset the M5Cardputer, the port will reconnect, unlike other terms like Putty.
 
+### Linux Support
+
+This emulator is now able to be compiled and run in linux.  Just clone this repository, change directory to the src/emu-linux folder.  Then just run "make main".  To run, just run "./main".  I have only tested this on a Intel N150 Win 11 computer in WSL, a Raspberry Pi 4B and termux on my Pixel 9a.  It seems to work fully on all by my phone, where MBASIC in CP/M has unpredictable results.  I will one day look into this issue.
+
+### The speed
+
+From my quick calulations I found the following by running the default z80 code starting at address 0.  The command "on" will start this running and "." will appear at a rate dependent on how fast the system is, about 1 per second on a M5Cardputer.  By doing a "d 0", there are some numbers starting at address 00f0.  The loaded program counts up from 0 and the six bytes at this address represent a 48 count.  Note:  Every 2 bytes is in little endian, so the order is reversed.  Just do "l 0" to see the code.  I roughly timed it running for about 10 seconds and then calculated the mhz.  I do plan to update the code to have it do the calculation.
+
+M5Cardputer - 7.5 Mhz
+Raspberry Pi 4B = 200 Mhz
+Intel N150 - 300 Mhz
+Pixel 9a Termux = 200 Mhz ( if I remmember correctly )
+
+### Command parameters
+
+Many of the commands require parameters as shown in the help.  In cases where a number is required, the default varies as to whether the number is interpreted as decimal or hex.  In cases where hex is most useful, I have it set to hex, otherwise it is decimal.  I have added support for prefixes such as $, %, 0x, 0b, 0o so any format can be entered.  Note that in cases where the default is hex, the # prefix changes the default to decimal.
+
 ![emu.help.png](img/emu.help.png)
 
 ## Limitations
 
-I just started writing this less than 3 weeks ago, so I have yet to put a lot of effort into error checking.  For example, entering commands that use parameters outside the limits may result in unpredictable results, maybe even a crash.  For instance, the memory address should always be in the range of 0000 to ffff, in some cases I have checks in place.  The configuration is also currently hardcoded into the source code.  Eventually, I hope to put the configuration in a config file to avoid having to rebuild the app everytime I want to change the configuration.
+I just started writing this on May 1st, so I have yet to put a lot of effort into error checking.  For example, entering commands that use parameters outside the limits may result in unpredictable results, maybe even a crash.  For instance, the memory address should always be in the range of 0000 to ffff, in some cases I have checks in place.  The configuration is also currently hardcoded into the source code.  Eventually, I hope to put the configuration in a config file to avoid having to rebuild the app everytime I want to change the configuration.
 
 The design and cmd names may change in the future.  As to how much time I spend on enhancing this in the near future is hard to say, especially as it is now approaching summer.
 
