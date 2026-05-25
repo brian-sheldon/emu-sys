@@ -750,6 +750,14 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
       }
       fclose( fp );
     #endif
+  } else {
+    print( "cpm_disk_rw invalid addr: " );
+    print( addr );
+    print( " trk: " );
+    print( trk );
+    print( " sec: " );
+    print( sec );
+    println( "" );
   }
 }
 

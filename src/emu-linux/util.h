@@ -86,12 +86,12 @@ long pnum( char *word, int radix ) {
   val = strtol( word + pos, &endptr, radix );
   bool success = true;
   if ( ( word + pos ) == endptr ) {
-    printf( "error not a number ...\n" );
+    println( "error not a number ..." );
     success = false;
   } else if ( ( word + len ) == endptr ) {
     success = true;
   } else {
-    printf( "error non-number chars found ...\n" );
+    println( "error non-number chars found ..." );
     success = false;
   }
   if ( success ) {
@@ -99,7 +99,7 @@ long pnum( char *word, int radix ) {
       val = -val;
     }
   } else {
-    val = 0;
+    val = NULL;
   }
   //printf( "word: %s radix: %d sign: %c success: %d rem: %ld\n", word, radix, sign, success, val );
   return val;
