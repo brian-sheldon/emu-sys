@@ -1,4 +1,4 @@
-# Currently CP/M emulator running on the M5Cardputer
+# CP/M emulator running on the M5Cardputer and Linux
 
 ### Version 0.3.x - Uploaded 2026/05/25 in progress, no updated binary
 
