@@ -27,7 +27,7 @@ char defcmd[20] = "";
 #endif
 
 static void main_version() {
-  println( "Version: 0.2.4-alpha" );
+  println( "Version: 0.3.0-alpha" );
 }
 
 static void main_clrcmd() {

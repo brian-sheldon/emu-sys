@@ -32,7 +32,7 @@ void cpu_stopset() {
 
 void cpu_stopat() {
   if ( cmdline.plen > 1 ) {
-    cpuState.stopat = hex2int( cmdline.p1 ) & 0xffff;
+    cpuState.stopat = pnum( cmdline.p1, 16 ) & 0xffff;
     cpuState.stopset = true;
   }
   print( "stopat set: " );
@@ -43,7 +43,7 @@ void cpu_stopat() {
 
 void cpu_pc() {
   if ( cmdline.plen > 1 ) {
-    cpu.pc = hex2int( cmdline.p1 ) & 0xffff;
+    cpu.pc = pnum( cmdline.p1, 16 ) & 0xffff;
   }
   println( cpu.pc );
 }
@@ -81,10 +81,10 @@ void cpu_l() {
   int addr = disaddr;
   int lines = 8;
   if ( cmdline.plen > 1 ) {
-    addr = hex2int( cmdline.p1 );
+    addr = pnum( cmdline.p1, 16 );
   }
   if ( cmdline.plen > 2 ) {
-    lines = dec2int( cmdline.p2 );
+    lines = pnum( cmdline.p2, 10 );
   }
   for ( int i = 0; i < lines; i++ ) {
     addr += dis( mem, addr & 0xffff );
@@ -209,7 +209,7 @@ void cpu_state_old() {
 void cpu_d() {
   int addr = dumpaddr;
   if ( cmdline.plen > 1 ) {
-    addr = hex2int( cmdline.p1 ) & 0xffff;
+    addr = pnum( cmdline.p1, 16 ) & 0xffff;
   }
   println( hexLines( addr, mem, addr, 16, 16 ) );
   dumpaddr = addr + 256;
@@ -256,7 +256,7 @@ void cpu_step() {
   int loops = 1;
   int ticks = 0;
   if ( cmdline.plen > 1 ) {
-    loops = dec2int( cmdline.p1 );
+    loops = pnum( cmdline.p1, 10 );
   }
   if ( cmdline.plen > 2 ) {
     each = true;
@@ -337,9 +337,8 @@ cmd_entry_t cmds_cpu[] = {
   { "step10k", cpu_step10k ,"" , "cpu step 10,000" },
   { "step100k", cpu_step100k ,"" , "cpu step 100,000" },
   { "step1m", cpu_step1m ,"" , "cpu step 1,000,000" },
-  { "sendcr", cpu_sendcr, "", "send cr key to system" },
   { "sendstr", cpu_sendstr, "str", "send str to system" },
-  { "sendln", cpu_sendln, "str", "send str to system" },
+  { "sendln", cpu_sendln, "[str]", "send str plus cr to system" },
   { "state", cpu_state ,"" , "cpu state" },
   { "next", cpu_next ,"" , "show next instruction to run" },
   { "stopclr", cpu_stopclr, "", "stopat clr" },

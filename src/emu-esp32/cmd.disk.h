@@ -10,10 +10,10 @@ static void disk_b() {
 
 static void disk_drv() {
   if ( cmdline.plen > 1 ) {
-    drv = dec2int( cmdline.p1 );
+    drv = pnum( cmdline.p1, 10 );
   }
   if ( cmdline.plen > 2 ) {
-    int i = dec2int( cmdline.p2 );
+    int i = pnum( cmdline.p2, 10 );
     drvs[drv] = i;
   }
   print( "drv: " );
@@ -34,7 +34,7 @@ static void disk_drvs() {
 static void disk_img() {
   int i = drv;
   if ( cmdline.plen > 1 ) {
-    i = dec2int( cmdline.p1 );
+    i = pnum( cmdline.p1, 10 );
   }
   if ( cmdline.plen > 2 ) {
     //imgs[i].config( cmdline.p2 );
@@ -60,10 +60,10 @@ static void disk_disk() {
   int trk = -1;
   int log = -1;
   if ( cmdline.plen > 1 ) {
-    trk = dec2int( cmdline.p1 );
+    trk = pnum( cmdline.p1, 10 );
   }
   if ( cmdline.plen > 2 ) {
-    log = dec2int( cmdline.p2 );
+    log = pnum( cmdline.p2, 10 );
   }
   uint8_t buffer[128];
   print_cpm_disk_sec_info( drv, trk, log );
@@ -76,9 +76,9 @@ static void disk_trklog() {
   int blk, blksec;
   int trk, log;
   if ( cmdline.plen > 1 ) {
-    trk = dec2int( cmdline.p1 );
+    trk = pnum( cmdline.p1, 10 );
     if ( cmdline.plen > 2 ) {
-      log = dec2int( cmdline.p2 );
+      log = pnum( cmdline.p2, 10 );
       cpm_disk_trklog2blksec( trk, log, &blk, &blksec );
       print( "trk: " );
       print( trk );
@@ -96,9 +96,9 @@ static void disk_blksec() {
   int blk, blksec;
   int trk, log;
   if ( cmdline.plen > 1 ) {
-    blk = dec2int( cmdline.p1 );
+    blk = pnum( cmdline.p1, 10 );
     if ( cmdline.plen > 2 ) {
-      blksec = dec2int( cmdline.p2 );
+      blksec = pnum( cmdline.p2, 10 );
       cpm_disk_blksec2trklog( blk, blksec, &trk, &log );
       print( "trk: " );
       print( trk );
@@ -117,7 +117,7 @@ void disk_load() {
   if ( cmdline.plen > 1 ) {
     char *path = cmdline.p1;
     if ( cmdline.plen > 2 ) {
-      addr = hex2int( cmdline.p2 );
+      addr = pnum( cmdline.p2, 16 );
     }
     disk_load_bin( mem, sizeof( mem ), addr, path );
   }

@@ -14,7 +14,7 @@ void trace_cpu_clr() {
 
 void trace_cpu_set() {
   if ( cmdline.plen > 1 ) {
-    traceCpuStart = hex2int( cmdline.p1 );
+    traceCpuStart = pnum( cmdline.p1, 16 );
   }
   print( "trace cpu start: " );
   println( hex4( traceCpuStart ) );
@@ -25,13 +25,13 @@ void trace_cpu_show() {
   int end = 0xffff;
   int over = 0;
   if ( cmdline.plen > 1 ) {
-    beg = hex2int( cmdline.p1 ) & 0xffff;
+    beg = pnum( cmdline.p1, 16 ) & 0xffff;
   }
   if ( cmdline.plen > 2 ) {
-    end = hex2int( cmdline.p2 ) & 0xffff;
+    end = pnum( cmdline.p2, 16 ) & 0xffff;
   }
   if ( cmdline.plen > 3 ) {
-    over = dec2int( cmdline.p3 ) & 0xffff;
+    over = pnum( cmdline.p3, 10 ) & 0xffff;
   }
   size_t next = 0;
   for ( size_t addr = 0; addr < traceCpuLen; addr++ ) {
@@ -76,13 +76,13 @@ void trace_mem_show() {
   int end = 0xffff;
   int min = 0;
   if ( cmdline.plen > 1 ) {
-    beg = hex2int( cmdline.p1 ) & 0xffff;
+    beg = pnum( cmdline.p1, 16 ) & 0xffff;
   }
   if ( cmdline.plen > 2 ) {
-    end = hex2int( cmdline.p2 ) & 0xffff;
+    end = pnum( cmdline.p2, 16 ) & 0xffff;
   }
   if ( cmdline.plen > 3 ) {
-    min = dec2int( cmdline.p3 ) & 0xffff;
+    min = pnum( cmdline.p3, 10 ) & 0xffff;
   }
   size_t prev = 0;
   for ( size_t addr = 0; addr < traceMemLen; addr++ ) {

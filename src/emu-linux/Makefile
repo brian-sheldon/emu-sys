@@ -10,8 +10,11 @@ CPPFLAGS = -Wall -Wextra -02 -g
 
 all: z80_test spectrum_test cpm_test cpmcon cpm_debug zxsdl
 
-forth: forth.c
-	$(CC) $(CFLAGS) -o forth forth.c $(LDFLAGS)
+fm: fm.c
+	$(CC) $(CFLAGS) -o fm fm.c $(LDFLAGS)
+
+pnum: parse.num.c
+	$(CC) $(CFLAGS) -o pnum parse.num.c $(LDFLAGS)
 
 test: test.c
 	$(CC) $(CFLAGS) -o test test.c $(LDFLAGS)
