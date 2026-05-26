@@ -1573,10 +1573,14 @@ static int exec_opcode(Z80 *cpu, uint8_t op) {
             case 1: /* CB prefix -- already handled above. */
                 break;
             case 2: /* OUT (n),A -- Output A to port (A<<8 | n). */
+                int sec0 = cpm.sec0;
                 { uint8_t port = FETCH();
                   OUT((cpu->a << 8) | port, cpu->a);
                 }
                 tstates = 11;
+                if ( debug_disk && sec0 != cpm.sec0 ) {
+                  println( "z80.c sec0 changed ..." );
+                }
                 break;
             case 3: /* IN A,(n) -- Input from port (A<<8 | n). */
                 { uint8_t port = FETCH();
