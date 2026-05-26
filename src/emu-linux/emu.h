@@ -252,6 +252,16 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
     case 13: // FDC cmd
       status = 0;
       addr = drive.dmahigh * 256 + drive.dmalow;
+      print( "fdc command: " );
+      print( val );
+      print( " addr: " );
+      print( addr );
+      print( " drv: " );
+      print( drive.drv );
+      print( " trk: " );
+      print( drive.track );
+      print( " sec: " );
+      println( drive.sector );
       if ( val == 0 ) {
         cpm_disk_rd_sec( drive.drv, mem, addr, drive.track, drive.sector );
       } else {
