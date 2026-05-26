@@ -213,8 +213,10 @@ uint8_t io_read( void *ctx, uint16_t port ) {
 void io_write( void *ctx, uint16_t port, uint8_t val ) {
   (void)ctx;
   port = port & 0xff;
-  char ch[10];
-  snprintf( ch, sizeof( ch ), "%c", val );
+  char ch[2];
+  ch[0] = (char)val;
+  ch[1] = '\0';
+  //snprintf( ch, sizeof( ch ), "%c", val );
   //Serial.print( "io_write port: " );
   //Serial.print( port );
   //Serial.print( " val: " );
