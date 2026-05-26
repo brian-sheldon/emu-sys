@@ -56,6 +56,15 @@ static void disk_imgs() {
   }
 }
 
+static void disk_disk_pos() {
+  if ( cmdline.plen > 2 ) {
+    int trk = pnum( cmdline.p1, 10 );
+    int sec = pnum( cmdline.p2, 10 );
+    int pos = cpm_disk_pos( trk, sec );
+    println( pos );
+  }
+}
+
 static void disk_disk() {
   int trk = -1;
   int log = -1;
@@ -199,6 +208,7 @@ cmd_entry_t cmds_disk[] = {
   { "img", disk_img, "[index] [path]", "list img or set img path" },
   { "imgs", disk_imgs, "", "list configured imgs" },
   { "disk", disk_disk, "[trk logsec]", "hexdump of next sector or sector at trk logsec" },
+  { "diskpos", disk_disk_pos, "[trk logsec]", "pos within img where sector is located" },
   { "trklog", disk_trklog, "trk logsec", "get blk blksec from trk logsec" },
   { "blksec", disk_blksec, "blk blksec", "get trk logsec from blk blksec" },
   { "load", disk_load, "path [addr]", "load rom/bin into memory at addr" },

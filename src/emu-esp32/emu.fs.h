@@ -636,6 +636,18 @@ bool cpm_disk_isvalid( int trk, int sec ) {
 }
 
 long int cpm_disk_pos( int trk, int sec ) {
+  if ( debug_disk ) {
+    print( "cpm_disk_pos cpm.secs: " );
+    print( cpm.secs );
+    print( " cpm.sec0: " );
+    print( cpm.sec0 );
+    print( " cpm.secsize: " );
+    print( cpm.secsize );
+    print( " trk: " );
+    print( trk );
+    print( " sec: " );
+    println( sec );
+  }
   long int pos = trk * cpm.secs * cpm.secsize + ( sec - cpm.sec0 ) * cpm.secsize;
   return pos;
 }
