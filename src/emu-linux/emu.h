@@ -404,6 +404,8 @@ String status() {
 }
 */
 
+int sec0;
+
 int steps( int n ) {
   int ticks = 0;
   int steps = 0;
@@ -414,15 +416,21 @@ int steps( int n ) {
       cpuState.stopped = true;
       cpuState.running = false;
     } else {
+      sec0 = cpm.sec0;
       int t = z80_step(&cpu);
       if ( t == 1 ) {
         cpuState.halted = true;
         cpuState.running = false;
       } else {
+        if ( sec0 != cpm.sec0 ) {
+          println( "error sec0 changed before cpu trace ..." );
+          cpuState.stopped = true;
+          cpuState.running = false;
+        }
+        sec0 = cpm.sec0;
         ticks += t;
         steps++;
         if ( cpuState.traceCpu ) {
-          int sec0 = cpm.sec0;
           if ( pc > traceCpuStart && pc < traceCpuStart + traceCpuLen ) {
             pc = pc - traceCpuStart;
             if ( traceCpu[pc] < 0xff ) {
