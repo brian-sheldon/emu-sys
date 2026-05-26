@@ -587,7 +587,7 @@ void print_cpm() {
   print( " " );
   print( cpm.secs );
   print( " " );
-  print( cpm.secize );
+  print( cpm.secsize );
   print( " " );
   print( cpm.trk0 );
   print( " " );
