@@ -414,7 +414,13 @@ int steps( int n ) {
       cpuState.stopped = true;
       cpuState.running = false;
     } else {
+      if ( debug_disk && cpuState.steps > 88000 ) {
+        println( cpm.sec0 );
+      }
       int t = z80_step(&cpu);
+      if ( debug_disk && cpuState.steps > 88000 ) {
+        println( cpm.sec0 );
+      }
       if ( t == 1 ) {
         cpuState.halted = true;
         cpuState.running = false;
