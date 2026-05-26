@@ -815,6 +815,9 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     println( "" );
     print_hex_lines( addr, data, addr, 8, 16 );
   }
+  if ( debug_disk ) {
+    println( cpm.sec0 );
+  }
 }
 
 void cpm_disk_rd_log( int drv, uint8_t *data, int addr, int trk, int log ) {
