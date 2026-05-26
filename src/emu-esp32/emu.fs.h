@@ -711,6 +711,7 @@ void print_cpm_disk_sec_info( int drv, int trk, int log ) {
 }
 
 void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int trk, int sec ) {
+  bool error = false;
   int img;
   if ( mon ) {
     img = mon_drvs[ drv ].img;
@@ -742,16 +743,30 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
       } else {
         fp = fopen( path, "rb" );
       }
+      size_t res;
       fseek( fp, cpm_disk_pos( trk, sec ), SEEK_SET );
       if ( write ) {
-        fwrite( data + addr, 1, 128, fp );
+        res = fwrite( data + addr, 1, 128, fp );
       } else {
-        fread( data + addr, 1, 128, fp );
+        res = fread( data + addr, 1, 128, fp );
+      }
+      if ( res < 128 ) {
+        if ( feof( fp ) ) {
+          println( "end of file reached ..." );
+          error = true;
+        } else if ( ferror( fp ) ) {
+          println( "file error ..." );
+          error = true;
+        }
       }
       fclose( fp );
     #endif
   } else {
-    print( "cpm_disk_rw invalid addr: " );
+    println( "cpm_disk_rw invalid trk/sec error ..." );
+    error = true;
+  }
+  if ( error ) {
+    print( "addr: " );
     print( addr );
     print( " trk: " );
     print( trk );
