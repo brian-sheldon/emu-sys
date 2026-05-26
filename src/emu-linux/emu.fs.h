@@ -658,24 +658,19 @@ bool cpm_disk_isvalid( int trk, int sec ) {
 }
 
 long int cpm_disk_pos( int trk, int sec ) {
-  if ( debug_disk ) {
-    print( "cpm_disk_pos cpm.secs: " );
-    print( cpm.secs );
-    print( " cpm.sec0: " );
-    print( cpm.sec0 );
-    print( " cpm.secsize: " );
-    print( cpm.secsize );
-    print( " trk: " );
-    print( trk );
-    print( " sec: " );
-    println( sec );
-  }
   long int pos = trk * cpm.secs * cpm.secsize + ( sec - cpm.sec0 ) * cpm.secsize;
   return pos;
 }
 
+//
+// In Termux, this function appears to be corrupting the variables
+// cpm.sec0 and cpm.reserved, it is as if these were trk and sec
+// so using the disk command may result in issues.  The corruption
+// tends to cause issues with mbasic loading, some sectors are missing
+// due to the incorrection sec0 values.
+//
+
 void mon_drv_next( int drv ) {
-  println( "mon_drv_next ..." );
   mon_drvs[ drv ].log++;
   if ( mon_drvs[ drv ].log > cpm.secs ) {
     mon_drvs[ drv ].log = cpm.sec0;
@@ -757,9 +752,6 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
   } else {
     img = cpm_drvs[ drv ];
   }
-  if ( debug_disk ) {
-    println( cpm.sec0 );
-  }
   char *path = cpm_imgs[ img ];
   if ( cpm_disk_isvalid( trk, sec ) ) {
     #ifdef ESP32
@@ -829,9 +821,6 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     println( "" );
     print_hex_lines( addr, data, addr, 8, 16 );
   }
-  if ( debug_disk ) {
-    print_cpm();
-  }
 }
 
 void cpm_disk_rd_log( int drv, uint8_t *data, int addr, int trk, int log ) {
@@ -855,13 +844,11 @@ void cpm_disk_rd_log( int drv, uint8_t *data, int addr, int trk, int log ) {
 void cpm_disk_rd_sec( int drv, uint8_t *data, int addr, int trk, int sec ) {
   if ( cpm_disk_isvalid( trk, sec ) ) {
     cpm_disk_rw( false, false, drv, data, addr, trk, sec );
-    //mon_drv_next( drv );
   }
 }
 
 void cpm_disk_wr_sec( int drv, uint8_t *data, int addr, int trk, int sec ) {
   if ( cpm_disk_isvalid( trk, sec ) ) {
     cpm_disk_rw( true, false, drv, data, addr, trk, sec );
-    //mon_drv_next( drv );
   }
 }

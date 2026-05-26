@@ -216,11 +216,6 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
   char ch[2];
   ch[0] = (char)val;
   ch[1] = '\0';
-  //snprintf( ch, sizeof( ch ), "%c", val );
-  //Serial.print( "io_write port: " );
-  //Serial.print( port );
-  //Serial.print( " val: " );
-  //Serial.println( val );
   int status;
   size_t addr;
   switch ( port & 0xff ) {
@@ -271,9 +266,6 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
         cpm_disk_rd_sec( drive.drv, mem, addr, drive.track, drive.sector );
       } else {
         cpm_disk_wr_sec( drive.drv, mem, addr, drive.track, drive.sector );
-      }
-      if ( debug_disk ) {
-        print_cpm();
       }
       break;
     case 15:
@@ -400,8 +392,6 @@ String status() {
 }
 */
 
-int sec0;
-
 int steps( int n ) {
   int ticks = 0;
   int steps = 0;
@@ -412,14 +402,7 @@ int steps( int n ) {
       cpuState.stopped = true;
       cpuState.running = false;
     } else {
-      sec0 = cpm.sec0;
       int t = z80_step(&cpu);
-      if ( sec0 != cpm.sec0 ) {
-        print( "steps - " );
-        print_cpm();
-        cpuState.stopped = true;
-        cpuState.running = false;
-      }
       if ( t == 1 ) {
         cpuState.halted = true;
         cpuState.running = false;
