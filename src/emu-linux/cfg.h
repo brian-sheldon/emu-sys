@@ -1,6 +1,8 @@
 
 #include <stdbool.h>
 
+bool debug_disk = false;
+
 struct Colors {
   char *reset;
   char *prompt;

@@ -30,6 +30,14 @@ static void main_version() {
   println( "Version: 0.3.0-alpha" );
 }
 
+static void main_debug_on() {
+  debug_disk = true;
+}
+
+static void main_debug_off() {
+  debug_disk = false;
+}
+
 static void main_clrcmd() {
   strcpy( defcmd, "" );
 }
@@ -81,13 +89,15 @@ static void help();
 static void words();
 
 cmd_entry_t cmds_main[] = {
+  { "version", main_version, "", "display version" },
+  { "debugon", main_debug_on, "", "debug on" },
+  { "debugoff", main_debug_off, "", "debug off" },
   { "clrcmd", main_clrcmd, "", "clears defcmd, cmd that runs if just enter hit" },
   { "pause", main_pause, "milliseconds", "pause for time given" },
   { "ruler", main_ruler, "[columns]", "display ruler and set length" },
   { "ruleron", main_ruleron, "", "ruler on for every cmd" },
   { "ruleroff", main_ruleroff, "", "ruler off" },
   { "colors", main_colors, "", "display colors" },
-  { "version", main_version, "", "display version" },
   { "help", help, "", "detailed help for all commands" },
   { "words", words, "", "list all commands" },
   { NULL, NULL, NULL, NULL }
