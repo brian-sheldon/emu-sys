@@ -212,10 +212,6 @@ uint8_t io_read( void *ctx, uint16_t port ) {
 
 void io_write( void *ctx, uint16_t port, uint8_t val ) {
   (void)ctx;
-  if ( debug_disk ) {
-    print( "io_write " );
-    println( cpm.sec0 );
-  }
   port = port & 0xff;
   char ch[2];
   ch[0] = (char)val;
@@ -259,11 +255,9 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
       status = 0;
       addr = drive.dmahigh * 256 + drive.dmalow;
       if ( debug_disk ) {
-        print( "io_write " );
-        println( cpm.sec0 );
-      }
-      if ( debug_disk ) { 
-        print( "fdc command: " );
+        print( "fdc cpm.sec0: ");
+        print( cpm.sec0 );
+        print( " command: " );
         print( val );
         print( " addr: " );
         print( addr );
@@ -278,6 +272,10 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
         cpm_disk_rd_sec( drive.drv, mem, addr, drive.track, drive.sector );
       } else {
         cpm_disk_wr_sec( drive.drv, mem, addr, drive.track, drive.sector );
+      }
+      if ( debug_disk ) {
+        print( "cpm.sec0: " );
+        println( cpm.sec0 );
       }
       break;
     case 15:
@@ -418,16 +416,15 @@ int steps( int n ) {
     } else {
       sec0 = cpm.sec0;
       int t = z80_step(&cpu);
+      if ( sec0 != cpm.sec0 ) {
+        println( "error sec0 changed before cpu trace ..." );
+        cpuState.stopped = true;
+        cpuState.running = false;
+      }
       if ( t == 1 ) {
         cpuState.halted = true;
         cpuState.running = false;
       } else {
-        if ( sec0 != cpm.sec0 ) {
-          println( "error sec0 changed before cpu trace ..." );
-          cpuState.stopped = true;
-          cpuState.running = false;
-        }
-        sec0 = cpm.sec0;
         ticks += t;
         steps++;
         if ( cpuState.traceCpu ) {
@@ -436,11 +433,6 @@ int steps( int n ) {
             if ( traceCpu[pc] < 0xff ) {
               traceCpu[pc]++;
             }
-          }
-          if ( sec0 != cpm.sec0 ) {
-            println( "error sec0 changed after cpu trace ..." );
-            cpuState.stopped = true;
-            cpuState.running = false;
           }
         }
       }
