@@ -724,6 +724,7 @@ void print_cpm_disk_sec_info( int drv, int trk, int log ) {
 
 void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int trk, int sec ) {
   if ( debug_disk ) {
+    print( "disk_sec_rw beg: ");
     println( cpm.sec0 );
   }
   bool error = false;
@@ -805,6 +806,10 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     print( sec );
     println( "" );
     print_hex_lines( addr, data, addr, 8, 16 );
+  }
+  if ( debug_disk ) {
+    print( "disk_sec_rw end: ");
+    println( cpm.sec0 );
   }
 }
 
