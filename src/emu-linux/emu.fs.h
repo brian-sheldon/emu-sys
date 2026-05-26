@@ -581,6 +581,28 @@ struct Cpm cpm = {
   2, 64, 32, 8
 };
 
+void print_cpm() {
+  print( "struct cpm: " );
+  print( cpm.trks );
+  print( " " );
+  print( cpm.secs );
+  print( " " );
+  print( cpm.secize );
+  print( " " );
+  print( cpm.trk0 );
+  print( " " );
+  print( cpm.sec0 );
+  print( " " );
+  print( cpm.reserved );
+  print( " " );
+  print( cpm.exts );
+  print( " " );
+  print( cpm.extsize );
+  print( " " );
+  print( cpm.blksecs );
+  println( "" );
+}
+
 int cpm_disk_log2sec_table[] = {
   1,7,13,19,
   25,5,11,17,
@@ -724,8 +746,7 @@ void print_cpm_disk_sec_info( int drv, int trk, int log ) {
 
 void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int trk, int sec ) {
   if ( debug_disk ) {
-    print( "disk_sec_rw beg: ");
-    println( cpm.sec0 );
+    print_cpm();
   }
   bool error = false;
   long int pos = 0;
@@ -808,8 +829,7 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     print_hex_lines( addr, data, addr, 8, 16 );
   }
   if ( debug_disk ) {
-    print( "disk_sec_rw end: ");
-    println( cpm.sec0 );
+    print_cpm();
   }
 }
 

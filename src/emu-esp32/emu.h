@@ -255,9 +255,8 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
       status = 0;
       addr = drive.dmahigh * 256 + drive.dmalow;
       if ( debug_disk ) {
-        print( "fdc cpm.sec0: ");
-        print( cpm.sec0 );
-        print( " command: " );
+        print_cpm();
+        print( "fdc command: " );
         print( val );
         print( " addr: " );
         print( addr );
@@ -274,8 +273,7 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
         cpm_disk_wr_sec( drive.drv, mem, addr, drive.track, drive.sector );
       }
       if ( debug_disk ) {
-        print( "cpm.sec0: " );
-        println( cpm.sec0 );
+        print_cpm();
       }
       break;
     case 15:
@@ -417,7 +415,8 @@ int steps( int n ) {
       sec0 = cpm.sec0;
       int t = z80_step(&cpu);
       if ( sec0 != cpm.sec0 ) {
-        println( "error sec0 changed before cpu trace ..." );
+        print( "steps - " );
+        print_cpm();
         cpuState.stopped = true;
         cpuState.running = false;
       }
