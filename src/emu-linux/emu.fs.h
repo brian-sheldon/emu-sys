@@ -854,13 +854,13 @@ void cpm_disk_rd_log( int drv, uint8_t *data, int addr, int trk, int log ) {
 void cpm_disk_rd_sec( int drv, uint8_t *data, int addr, int trk, int sec ) {
   if ( cpm_disk_isvalid( trk, sec ) ) {
     cpm_disk_rw( false, false, drv, data, addr, trk, sec );
-    mon_drv_next( drv );
+    //mon_drv_next( drv );
   }
 }
 
 void cpm_disk_wr_sec( int drv, uint8_t *data, int addr, int trk, int sec ) {
   if ( cpm_disk_isvalid( trk, sec ) ) {
     cpm_disk_rw( true, false, drv, data, addr, trk, sec );
-    mon_drv_next( drv );
+    //mon_drv_next( drv );
   }
 }
