@@ -16,8 +16,7 @@ Any interactive ansi terminal program should work.  The Arduino IDE serial monit
 
 ### Linux Support
 
-This emulator is now able to be compiled and run in linux.  Just clone this repository, change directory to the src/emu-linux folder.  Then just run "make main".  To run, just run "./main".  I have only tested this on a Intel N150 Win 11 computer in WSL, a Raspberry Pi 4B and termux on my Pixel 9a.  It seems to work fully on all by my phone, where MBASIC in CP/M has unpredictable results.  I will one day look into this issue.
-
+This emulator is now able to be compiled and run in linux.  Just clone this repository, change directory to the src/emu-linux folder.  Then just run "make main".  To run, just run "./main".  I have only tested this on a Intel N150 Win 11 computer in WSL, a Raspberry Pi 4B and termux on my Pixel 9a.  The problem with running MBASIC on my phone is a result of the struct Cpm cpm variables being corrupted by the cpm_drv_next() function.  MBASIC now works as I found that I was mistakingly calling it, but the next function is still used for the "disk" command to auto display the next logical sector.  Problem does not appear on the M5Cardputer, wsl in win 11 N150 system or the Raspberry Pi 4B.
 ### The speed
 
 From my quick calulations I found the following by running the default z80 code starting at address 0.  The command "on" will start this running and "." will appear at a rate dependent on how fast the system is, about 1 per second on a M5Cardputer.  By doing a "d 0", there are some numbers starting at address 00f0.  The loaded program counts up from 0 and the six bytes at this address represent a 48 count.  Note:  Every 2 bytes is in little endian, so the order is reversed.  Just do "l 0" to see the code.  I roughly timed it running for about 10 seconds and then calculated the mhz.  I do plan to update the code to have it do the calculation.
