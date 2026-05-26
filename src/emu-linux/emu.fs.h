@@ -786,6 +786,7 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     print( " sec: " );
     print( sec );
     println( "" );
+    print_hex_lines( addr, data, addr, 8, 16 );
   }
 }
 
