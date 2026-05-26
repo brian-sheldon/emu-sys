@@ -422,7 +422,7 @@ int steps( int n ) {
         ticks += t;
         steps++;
         if ( cpuState.traceCpu ) {
-          if ( debug_disk && cpuState.steps > 89040 ) {
+          if ( debug_disk && cpuState.steps > 88000 ) {
             println( cpm.sec0 );
           }
           if ( pc > traceCpuStart && pc < traceCpuStart + traceCpuLen ) {
@@ -431,7 +431,7 @@ int steps( int n ) {
               traceCpu[pc]++;
             }
           }
-          if ( debug_disk && cpuState.steps > 89040 ) {
+          if ( debug_disk && cpuState.steps > 88000 ) {
             println( cpm.sec0 );
           }
         }
