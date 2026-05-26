@@ -776,15 +776,17 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     print( sec );
     println( "" );
   }
-  print( "disk_sec_rw pos: " );
-  print( pos );
-  print( " addr: " );
-  print( addr );
-  print( " trk: " );
-  print( trk );
-  print( " sec: " );
-  print( sec );
-  println( "" );
+  if ( debug_disk ) {
+    print( "disk_sec_rw pos: " );
+    print( pos );
+    print( " addr: " );
+    print( addr );
+    print( " trk: " );
+    print( trk );
+    print( " sec: " );
+    print( sec );
+    println( "" );
+  }
 }
 
 void cpm_disk_rd_log( int drv, uint8_t *data, int addr, int trk, int log ) {
