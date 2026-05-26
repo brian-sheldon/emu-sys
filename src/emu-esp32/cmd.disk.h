@@ -4,7 +4,7 @@
 // MIT License
 
 static void disk_b() {
-  cpm_disk_rd_log( drvs[0], mem, 0, 0, 1 );
+  cpm_disk_rd_sec( drvs[0], mem, 0, 0, 1 );
   println( "boot sector loaded to zero page ..." );
 }
 

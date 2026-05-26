@@ -675,6 +675,7 @@ long int cpm_disk_pos( int trk, int sec ) {
 }
 
 void mon_drv_next( int drv ) {
+  println( "mon_drv_next ..." );
   mon_drvs[ drv ].log++;
   if ( mon_drvs[ drv ].log > cpm.secs ) {
     mon_drvs[ drv ].log = cpm.sec0;
