@@ -723,6 +723,9 @@ void print_cpm_disk_sec_info( int drv, int trk, int log ) {
 }
 
 void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int trk, int sec ) {
+  if ( debug_disk ) {
+    println( cpm.sec0 );
+  }
   bool error = false;
   long int pos = 0;
   int img;
@@ -730,6 +733,9 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     img = mon_drvs[ drv ].img;
   } else {
     img = cpm_drvs[ drv ];
+  }
+  if ( debug_disk ) {
+    println( cpm.sec0 );
   }
   char *path = cpm_imgs[ img ];
   if ( cpm_disk_isvalid( trk, sec ) ) {
@@ -750,6 +756,9 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
       }
       file.close();
     #else
+      if ( debug_disk ) {
+        println( cpm.sec0 );
+      }
       FILE *fp;
       if ( write ) {
         fp = fopen( path, "wb" );
@@ -759,10 +768,16 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
       size_t res;
       pos = cpm_disk_pos( trk, sec );
       fseek( fp, pos, SEEK_SET );
+      if ( debug_disk ) {
+        println( cpm.sec0 );
+      }
       if ( write ) {
         res = fwrite( data + addr, 1, 128, fp );
       } else {
         res = fread( data + addr, 1, 128, fp );
+      }
+      if ( debug_disk ) {
+        println( cpm.sec0 );
       }
       if ( res < 128 ) {
         if ( feof( fp ) ) {
