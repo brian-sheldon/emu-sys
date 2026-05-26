@@ -7,6 +7,7 @@
   char*: print_cstr,           \
   bool: print_int,              \
   int: print_int,              \
+  long int: print_int,              \
   uint16_t: print_int,              \
   unsigned long: print_int,    \
   float: print_float,         \
@@ -39,6 +40,7 @@ void print_none( char *str ) {
   char*: println_cstr,           \
   bool: println_int,              \
   int: println_int,              \
+  long int: println_int,              \
   uint16_t: println_int,              \
   unsigned long: println_int,    \
   float: println_float,         \

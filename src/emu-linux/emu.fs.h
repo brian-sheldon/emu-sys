@@ -635,8 +635,8 @@ bool cpm_disk_isvalid( int trk, int sec ) {
   return res;
 }
 
-unsigned long cpm_disk_pos( int trk, int sec ) {
-  unsigned long pos = trk * cpm.secs * cpm.secsize + ( sec - cpm.sec0 ) * cpm.secsize;
+long int cpm_disk_pos( int trk, int sec ) {
+  long int pos = trk * cpm.secs * cpm.secsize + ( sec - cpm.sec0 ) * cpm.secsize;
   return pos;
 }
 
@@ -712,6 +712,7 @@ void print_cpm_disk_sec_info( int drv, int trk, int log ) {
 
 void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int trk, int sec ) {
   bool error = false;
+  long int pos = 0;
   int img;
   if ( mon ) {
     img = mon_drvs[ drv ].img;
@@ -744,7 +745,8 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
         fp = fopen( path, "rb" );
       }
       size_t res;
-      fseek( fp, cpm_disk_pos( trk, sec ), SEEK_SET );
+      pos = cpm_disk_pos( trk, sec );
+      fseek( fp, pos, SEEK_SET );
       if ( write ) {
         res = fwrite( data + addr, 1, 128, fp );
       } else {
@@ -774,7 +776,9 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     print( sec );
     println( "" );
   }
-  print( "disk_sec_rw addr: " );
+  print( "disk_sec_rw pos: " );
+  print( pos );
+  print( " addr: " );
   print( addr );
   print( " trk: " );
   print( trk );
