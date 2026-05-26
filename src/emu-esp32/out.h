@@ -69,6 +69,12 @@ void print( int v ) {
   do_print( buffer );
 }
 
+//void print( double v ) {
+  //char buffer[100];
+  //snprintf( buffer, sizeof( buffer ), "%.2f", v );
+  //do_print( buffer );
+//}
+
 void println() {
   print( "\r\n" );
 }
@@ -92,6 +98,11 @@ void println( int v ) {
   print( v );
   println();
 }
+
+//void println( double v ) {
+  //print( v );
+  //println();
+//}
 
 void printclr( char *clr ) {
   print( clr );

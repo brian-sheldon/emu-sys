@@ -19,12 +19,16 @@ struct CpuState {
   bool halted;
   bool stopset;
   uint16_t stopat;
-  unsigned long ticks;
-  unsigned long steps;
+  uint64_t ticks;
+  uint64_t steps;
+  uint64_t frames;
+  float mhz;
+  float mhzMin;
+  float mhzMax;
   bool traceCpu;
 };
 
-struct CpuState cpuState = { false, false, false, false, false, false, 0x0000, 0, 0, true };
+struct CpuState cpuState = { false, false, false, false, false, false, 0x0000, 0, 0, 0, 0.0, 2000.0, 0.0, true };
 
 bool running = false;
 bool iowait = false;

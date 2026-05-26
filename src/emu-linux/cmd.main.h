@@ -38,6 +38,23 @@ static void main_debug_off() {
   debug_disk = false;
 }
 
+static void main_vars() {
+  print( "char: " );
+  println( sizeof( char ) );
+  print( "short: " );
+  println( sizeof( short ) );
+  print( "int: " );
+  println( sizeof( int ) );
+  print( "unsigned int: " );
+  println( sizeof( unsigned int ) );
+  print( "long: " );
+  println( sizeof( long ) );
+  print( "unsigned long: " );
+  println( sizeof( unsigned long ) );
+  print( "long long: " );
+  println( sizeof( long long ) );
+}
+
 static void main_clrcmd() {
   strcpy( defcmd, "" );
 }
@@ -92,6 +109,7 @@ cmd_entry_t cmds_main[] = {
   { "version", main_version, "", "display version" },
   { "debugon", main_debug_on, "", "debug on" },
   { "debugoff", main_debug_off, "", "debug off" },
+  { "vars", main_vars, "", "display var sizes" },
   { "clrcmd", main_clrcmd, "", "clears defcmd, cmd that runs if just enter hit" },
   { "pause", main_pause, "milliseconds", "pause for time given" },
   { "ruler", main_ruler, "[columns]", "display ruler and set length" },

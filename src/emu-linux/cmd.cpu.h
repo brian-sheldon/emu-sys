@@ -4,8 +4,16 @@
 // MIT License
 
 void cpu_mhz() {
+  char buffer[20];
   print( "mhz: " );
-  println( mhz );
+  snprintf( buffer, sizeof( buffer ), "%.2f", cpuState.mhz );
+  print( buffer );
+  print( " min: " );
+  snprintf( buffer, sizeof( buffer ), "%.2f", cpuState.mhzMin );
+  print( buffer );
+  print( " max: " );
+  snprintf( buffer, sizeof( buffer ), "%.2f", cpuState.mhzMax );
+  println( buffer );
   strcpy( defcmd, cmdline.p0 );
 }
 

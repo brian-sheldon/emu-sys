@@ -14,6 +14,8 @@
 // The #ifdef are mostly being used to stage code as it is being generalized to run on other platforms
 //
 
+#include <time.h>
+
 #include "z80.dis.h"
 
 void do_cmd( char *cmd );
@@ -443,12 +445,41 @@ void cpu_frame() {
     }
   }
   if ( cpuState.running && cpuState.on ) {
+    // begin time
+    unsigned long delta = 0;
+    #ifdef ESP32
+      unsigned long beg = 0;
+      unsigned long end = 0;
+      beg = micros();
+    #else
+      struct timespec beg, end;
+      clock_gettime( CLOCK_MONOTONIC, &beg );
+    #endif
     ticks = steps( clocks );
+    // end time
+    if ( ticks > 30000 ) {
+      #ifdef ESP32
+        end = micros();
+        delta = end - beg;
+      #else
+        clock_gettime( CLOCK_MONOTONIC, &end );
+        long long seconds = end.tv_sec - beg.tv_sec;
+        long long nanos = end.tv_nsec - beg.tv_nsec;
+        if ( nanos < 0 ) {
+          seconds -= 1;
+          nanos += 1000000000LL;
+        }
+        delta = nanos / 1000;
+      #endif
+      cpuState.mhz = (float)ticks / delta;
+      if ( cpuState.mhz < cpuState.mhzMin ) cpuState.mhzMin = cpuState.mhz;
+      if ( cpuState.mhz > cpuState.mhzMax ) cpuState.mhzMax = cpuState.mhz;
+    }
   }
-  if ( ticks ) {} // use variable to avoid compiler warning
-  //frames++;
+  cpuState.frames++;
 }
 
+/*
 void loopEmu() {
   int loopticks = 50000;
   int loops = 10000;
@@ -490,6 +521,6 @@ void loopEmu() {
   lastTicks = ticks;
   #endif
 }
-
+*/
 
 
