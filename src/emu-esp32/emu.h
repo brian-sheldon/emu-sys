@@ -414,13 +414,7 @@ int steps( int n ) {
       cpuState.stopped = true;
       cpuState.running = false;
     } else {
-      if ( debug_disk && cpuState.steps > 88000 ) {
-        println( cpm.sec0 );
-      }
       int t = z80_step(&cpu);
-      if ( debug_disk && cpuState.steps > 88000 ) {
-        println( cpm.sec0 );
-      }
       if ( t == 1 ) {
         cpuState.halted = true;
         cpuState.running = false;
@@ -428,17 +422,17 @@ int steps( int n ) {
         ticks += t;
         steps++;
         if ( cpuState.traceCpu ) {
-          if ( debug_disk && cpuState.steps > 88000 ) {
-            println( cpm.sec0 );
-          }
+          int sec0 = cpm.sec0;
           if ( pc > traceCpuStart && pc < traceCpuStart + traceCpuLen ) {
             pc = pc - traceCpuStart;
             if ( traceCpu[pc] < 0xff ) {
               traceCpu[pc]++;
             }
           }
-          if ( debug_disk && cpuState.steps > 88000 ) {
-            println( cpm.sec0 );
+          if ( sec0 != cpm.sec0 ) {
+            println( "error sec0 changed after cpu trace ..." );
+            cpuState.stopped = true;
+            cpuState.running = false;
           }
         }
       }
