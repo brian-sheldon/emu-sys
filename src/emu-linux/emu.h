@@ -212,6 +212,10 @@ uint8_t io_read( void *ctx, uint16_t port ) {
 
 void io_write( void *ctx, uint16_t port, uint8_t val ) {
   (void)ctx;
+  if ( debug_disk ) {
+    print( "io_write " );
+    println( cpm.sec0 );
+  }
   port = port & 0xff;
   char ch[2];
   ch[0] = (char)val;
@@ -254,6 +258,10 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
     case 13: // FDC cmd
       status = 0;
       addr = drive.dmahigh * 256 + drive.dmalow;
+      if ( debug_disk ) {
+        print( "io_write " );
+        println( cpm.sec0 );
+      }
       if ( debug_disk ) { 
         print( "fdc command: " );
         print( val );
