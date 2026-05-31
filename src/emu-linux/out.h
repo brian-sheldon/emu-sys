@@ -3,14 +3,19 @@
 //
 // MIT License
 
+#include <stdio.h>
+#include <stdint.h>
+
 #define print(x) _Generic((x), \
   char*: print_cstr,           \
   bool: print_int,              \
   int: print_int,              \
   long int: print_int,              \
+  long long: print_int,           \
   uint8_t: print_int,              \
   uint16_t: print_int,              \
-  unsigned long: print_int,    \
+  uint32_t: print_int,         \
+  uint64_t: print_uint64,         \
   float: print_float,         \
   double: print_float,         \
   default: print_none          \
@@ -21,8 +26,17 @@ void print_cstr( char *str ) {
   fflush( stdout );
 }
 
-void print_int( int v ) {
+void print_int( long long v ) {
   printf( "%d", v );
+  //printf( "%ll", v );
+  fflush( stdout );
+}
+
+void print_uint64( uint64_t v ) {
+  int l = v & 0xffffffff;
+  int h = v >> 32;
+  printf( "%d %d", h, l );
+  //printf( "%" PRIu64 "", v );
   fflush( stdout );
 }
 
@@ -44,7 +58,8 @@ void print_none( char *str ) {
   long int: println_int,              \
   uint8_t: println_int,              \
   uint16_t: println_int,              \
-  unsigned long: println_int,    \
+  uint32_t: println_int,         \
+  uint64_t: println_int,         \
   float: println_float,         \
   double: println_float,         \
   default: println_none          \
@@ -64,6 +79,15 @@ void println_float( float v ) {
 
 void println_none( char *str ) {
   println_cstr( str );
+}
+
+void printch( char ch ) {
+  printf( "%c", ch );
+  fflush( stdout );
+}
+
+void printlnch( char ch ) {
+  printf( "%c\n", ch );
 }
 
 void printclr( char *clr ) {

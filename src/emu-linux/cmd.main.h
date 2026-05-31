@@ -20,8 +20,8 @@ char defcmd[20] = "";
 
 #include "cmd.cpu.h"
 #include "cmd.trace.h"
-//#ifdef ESP32
 #include "cmd.disk.h"
+#include "cmd.forth.h"
 #ifdef ESP32
 #include "cmd.fs.h"
 #endif
@@ -144,6 +144,7 @@ static void help() {
   help_one( "cpu", cmds_cpu );
   help_one( "trace", cmds_trace );
   help_one( "disk", cmds_disk );
+  help_one( "forth", cmds_forth );
   #ifdef ESP32
   help_one( "fs", cmds_fs );
   #endif
@@ -162,6 +163,7 @@ static void words() {
   words_one( cmds_cpu );
   words_one( cmds_trace );
   words_one( cmds_disk );
+  words_one( cmds_forth );
   #ifdef ESP32
   words_one( cmds_fs );
   #endif
@@ -184,6 +186,7 @@ static void exec( char *cmd ) {
   if ( ! res ) res = exec_one( cmds_cpu, cmd );
   if ( ! res ) res = exec_one( cmds_trace, cmd );
   if ( ! res ) res = exec_one( cmds_disk, cmd );
+  if ( ! res ) res = exec_one( cmds_forth, cmd );
   #ifdef ESP32
   if ( ! res ) res = exec_one( cmds_fs, cmd );
   #endif
@@ -216,20 +219,24 @@ void do_cmd( char *cmd ) {
     if ( ws ) {
       if ( ch != ' ' && ch != '\0' ) {
         cmdline.p[cmdline.plen] = j;
+        cmdline.cmd[j] = ch;
         cmdline.args[j++] = ch;
         //arg++;
         ws = false;
       }
     } else {
       if ( ch == ' ' || ch == '\0' ) {
+        cmdline.cmd[j] = ' ';
         cmdline.args[j++] = '\0'; // will be \0 after testing done
         cmdline.plen++;
         ws = true;
       } else {
+        cmdline.cmd[j] = ch;
         cmdline.args[j++] = ch;
       }
     }
   } while ( cmd[i++] != 0 );
+  cmdline.cmd[j] = '\0';
   cmdline.args[j] = '\0';
   for ( int i = cmdline.plen; i < 10; i++ ) {
     cmdline.p[i] = j;
@@ -241,7 +248,11 @@ void do_cmd( char *cmd ) {
   cmdline.p3 = cmdline.args + cmdline.p[3];
   cmdline.p4 = cmdline.args + cmdline.p[4];
   cmdline.p5 = cmdline.args + cmdline.p[5];
-  exec( cmdline.p0 );
+  if ( cmd_mode == 0 ) {
+    exec( cmdline.p0 );
+  } else {
+    forth();
+  }
   //
   //Serial.println( cmdline.p0 );
   for ( int i = 0; i < 10; i++ ) {

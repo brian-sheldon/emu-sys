@@ -101,7 +101,7 @@ void cpu_l() {
   strcpy( defcmd, cmdline.p0 );
 }
 
-void printreg( char *reg, int val, int width, int spcs, bool bar, bool lf ) {
+void printreg( char *reg, int64_t val, int width, int spcs, bool bar, bool lf ) {
   char numstr[20];
   if ( width == -1 ) {
     snprintf( numstr, sizeof( numstr ), "%d", val );

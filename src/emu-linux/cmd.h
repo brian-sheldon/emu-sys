@@ -3,6 +3,11 @@
 //
 // MIT License
 
+#define CMD_MODE_MAIN 0
+#define CMD_MODE_FORTH 1
+
+bool cmd_mode = CMD_MODE_MAIN;
+
 typedef void (*cmd_func_t)(void);
 
 typedef struct {
