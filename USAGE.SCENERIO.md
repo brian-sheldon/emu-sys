@@ -59,7 +59,7 @@ A: STAT     COM : BYE      COM : RMAC     COM : CREF80   COM
 A>
 ```
 
-### <enter>, will show cpu state again as it was last auto repeat cmd
+### Pressing enter will show cpu state again as it was last auto repeat cmd
 
 ```
 PC fbc1 | SP ef2f A ff F 44     | AF_ 0000 |
