@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "cmd.h"
 
@@ -61,9 +62,14 @@ static void main_clrcmd() {
 
 static void main_pause() {
   if ( cmdline.plen > 1 ) {
-    int pause = dec2int( cmdline.p1 );
+    long ms = dec2int( cmdline.p1 );
     #ifdef ESP32
-    delay( pause );
+    delay( ms );
+    #else
+      struct timespec ts;
+      ts.tv_sec = ms / 1000;
+      ts.tv_nsec = ( ms % 1000 ) * 1000000L;
+      nanosleep( &ts, NULL );
     #endif
   }
 }
