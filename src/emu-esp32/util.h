@@ -7,6 +7,19 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
+#include <time.h>
+
+void util_delay( long ms ) {
+  #ifdef ESP32
+    delay( ms );
+  #else
+    struct timespec ts;
+    ts.tv_sec = ms / 1000;
+    ts.tv_nsec = ( ms % 1000 ) * 1000000L;
+    nanosleep( &ts, NULL );
+  #endif
+}
 
 //
 // Allows the default radix to be set as there are cases where it makes

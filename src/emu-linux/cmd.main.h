@@ -5,18 +5,12 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <time.h>
 
 #include "cmd.h"
 
 #include "emu.fs.h"
 
 #include "emu.h"
-
-
-
-//#include <tuple>
-
 
 #include "cmd.cpu.h"
 #include "cmd.trace.h"
@@ -27,7 +21,7 @@
 #endif
 
 static void main_version() {
-  println( "Version: 0.3.0-alpha" );
+  println( "Version: 0.3.3-alpha" );
 }
 
 static void main_debug_on() {
@@ -59,17 +53,10 @@ static void main_clrcmd() {
   strcpy( defcmd, "" );
 }
 
-static void main_pause() {
+static void main_delay() {
   if ( cmdline.plen > 1 ) {
     long ms = dec2int( cmdline.p1 );
-    #ifdef ESP32
-    delay( ms );
-    #else
-      struct timespec ts;
-      ts.tv_sec = ms / 1000;
-      ts.tv_nsec = ( ms % 1000 ) * 1000000L;
-      nanosleep( &ts, NULL );
-    #endif
+    util_delay( ms );
   }
 }
 
@@ -116,7 +103,7 @@ cmd_entry_t cmds_main[] = {
   { "debugoff", main_debug_off, "", "debug off" },
   { "vars", main_vars, "", "display var sizes" },
   { "clrcmd", main_clrcmd, "", "clears defcmd, cmd that runs if just enter hit" },
-  { "pause", main_pause, "milliseconds", "pause for time given" },
+  { "delay", main_delay, "milliseconds", "delay for time given" },
   { "ruler", main_ruler, "[columns]", "display ruler and set length" },
   { "ruleron", main_ruleron, "", "ruler on for every cmd" },
   { "ruleroff", main_ruleroff, "", "ruler off" },

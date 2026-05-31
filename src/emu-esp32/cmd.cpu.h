@@ -229,7 +229,7 @@ void cpu_next() {
   dis( mem, cpu.pc );
 }
 
-void cpu_steps( int loops, bool each ) {
+void cpu_steps( int loops, bool each, long delay ) {
   int loop = 0;
   int ticks = 0;
   if ( cpuState.on == false && cpuState.iowait == false && cpuState.stopped == false && cpuState.halted == false ) {
@@ -252,6 +252,7 @@ void cpu_steps( int loops, bool each ) {
           print( colors[color].prompt );
           println( ">>> " );
         }
+        util_delay( delay );
       }
     }
   }
@@ -263,38 +264,40 @@ void cpu_step() {
   int loop = 0;
   int loops = 1;
   int ticks = 0;
+  int delay = 0;
   if ( cmdline.plen > 1 ) {
     loops = pnum( cmdline.p1, 10 );
   }
   if ( cmdline.plen > 2 ) {
+    delay = pnum( cmdline.p2, 10 );
     each = true;
   }
-  cpu_steps( loops, each );
+  cpu_steps( loops, each, delay );
   strcpy( defcmd, cmdline.p0 );
 }
 
 void cpu_step100() {
-  cpu_steps( 100, false );
+  cpu_steps( 100, false, 0 );
   strcpy( defcmd, cmdline.p0 );
 }
 
 void cpu_step1k() {
-  cpu_steps( 1000, false );
+  cpu_steps( 1000, false, 0 );
   strcpy( defcmd, cmdline.p0 );
 }
 
 void cpu_step10k() {
-  cpu_steps( 10000, false );
+  cpu_steps( 10000, false, 0 );
   strcpy( defcmd, cmdline.p0 );
 }
 
 void cpu_step100k() {
-  cpu_steps( 100000, false );
+  cpu_steps( 100000, false, 0 );
   strcpy( defcmd, cmdline.p0 );
 }
 
 void cpu_step1m() {
-  cpu_steps( 1000000, false );
+  cpu_steps( 1000000, false, 0 );
   strcpy( defcmd, cmdline.p0 );
 }
 
@@ -339,7 +342,7 @@ cmd_entry_t cmds_cpu[] = {
   { "mhz", cpu_mhz, "", "cpu mhz" },
   { "d", cpu_d, "[addr]", "mem dump at next addr or given addr" },
   { "l", cpu_l ,"[addr]" , "disassembly listing for addr" },
-  { "step", cpu_step ,"[steps]" , "cpu step once or given steps" },
+  { "step", cpu_step ,"[steps] [ms]" , "cpu step steps with ms delay" },
   { "step100", cpu_step100 ,"" , "cpu step 100" },
   { "step1k", cpu_step1k ,"" , "cpu step 1,000" },
   { "step10k", cpu_step10k ,"" , "cpu step 10,000" },
