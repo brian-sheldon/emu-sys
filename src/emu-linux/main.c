@@ -29,6 +29,8 @@ void loop() {
 
 int main() {
   
+  printf( "Press 'ctrl-d' to exit ...\n");
+  
   setup();
 
   while ( true ) {

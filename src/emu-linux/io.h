@@ -16,7 +16,7 @@ static struct termios old, new1;
 void initTermios( int echo ) {
   tcgetattr( 0, &old );
   new1 = old;
-  new1.c_lflag &= ~ICANON;
+  new1.c_lflag &= ~( ICANON | ISIG );
   new1.c_lflag &= echo ? ECHO : ~ECHO;
   new1.c_cc[VMIN] = 0;
   new1.c_cc[VTIME] = 0;
@@ -70,6 +70,11 @@ void ioLoop() {
       num = read( 0, &buffer, 1 );
       if ( num > 0 ) {
         cc = buffer[0];
+      }
+      if ( cc == 0x04 ) {
+        resetTermios();
+        println( "" );
+        exit( 0 );
       }
     #endif
     if ( num > 0 ) {

@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+char defcmd[20] = "";
+
+bool m_help_displayed = false;
 int delayTime = 0;
 bool fast = true;
 bool showState = false;

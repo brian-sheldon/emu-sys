@@ -17,7 +17,6 @@
 
 //#include <tuple>
 
-char defcmd[20] = "";
 
 #include "cmd.cpu.h"
 #include "cmd.trace.h"
@@ -282,8 +281,8 @@ void cmdLine( char *cmdline ) {
 }
 
 void setupCmd() {
-  println( "" );
-  println( "test cmd.main begs ..." );
+  //println( "" );
+  //println( "test cmd.main begs ..." );
   
-  println( "test cmd.main ends ..." );
+  //println( "test cmd.main ends ..." );
 }

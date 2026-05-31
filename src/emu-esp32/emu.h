@@ -283,13 +283,23 @@ void io_write( void *ctx, uint16_t port, uint8_t val ) {
         int addr = 0x80;
         int len = mem[addr] - 1;
         if ( len < 1 ) {
-          print( "M allows you to run commands" );
-          println( " in the monitor without leaving CP/M ..." );
-          println( "Usage M [cmd and paramters to exec]" );
+          if ( ! m_help_displayed ) {
+            print( "M allows you to run commands" );
+            println( " in the monitor without leaving CP/M ..." );
+            println( "Usage M [cmd and paramters to exec]" );
+            m_help_displayed = true;
+          } else {
+            cmd[0] = '\0';
+            do_cmd( defcmd );
+            printclr( colors[color].cpm_color );
+          }
         } else {
           addr += 2;
           memcpy( cmd, mem + addr, len );
           cmd[len] = '\0';
+          for ( int i = 0; i < len; i++ ) {
+            cmd[i] = tolower( cmd[i] );
+          }
           print( "mon exec: " );
           print( "[" );
           print( cmd );
