@@ -16,8 +16,9 @@ static struct termios old, new1;
 void initTermios( int echo ) {
   tcgetattr( 0, &old );
   new1 = old;
-  new1.c_lflag &= ~( ICANON | ISIG );
+  new1.c_lflag &= ~( ICANON );  // add | ISIG
   new1.c_lflag &= echo ? ECHO : ~ECHO;
+  new1.c_cc[VINTR] = 4;
   new1.c_cc[VMIN] = 0;
   new1.c_cc[VTIME] = 0;
   tcsetattr( 0, TCSANOW, &new1 );
