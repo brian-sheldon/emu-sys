@@ -10,6 +10,8 @@ $ cd emu-sys/src/emu-Linux
 $ make main
 ```
 
+Sorry for the warnings, I plan to clean this up in the future.
+
 ### Start the emulator
 
 ```
