@@ -11,9 +11,10 @@
 #include <time.h>
 
 void util_delay( long ms ) {
-  #ifdef ESP32
+  #ifdef ARDUINO
     delay( ms );
-  #else
+  #endif
+  #ifdef __linux__
     struct timespec ts;
     ts.tv_sec = ms / 1000;
     ts.tv_nsec = ( ms % 1000 ) * 1000000L;
@@ -239,29 +240,27 @@ void displayRuler() {
 }
 
 #ifdef ARDUINO_M5STACK_CARDPUTER
-
-int utilLoopMillis = 0;
-
-void displayBlink( int x, int color ) {
-  M5Cardputer.Display.fillCircle( x, 15, 10, color );
-  utilLoopMillis = millis();
-}
-
-void diskActivity( bool write = false ) {
-  if ( write ) {
-    displayBlink( 225, RED );
-  } else {
-    displayBlink( 200, GREEN );
-  }
-}
-
-
-void utilLoop() {
-  if ( millis() > utilLoopMillis + 250 ) {
-    M5Cardputer.Display.fillCircle( 200, 15, 10, BLACK );
-    M5Cardputer.Display.fillCircle( 225, 15, 10, BLACK );
+  int utilLoopMillis = 0;
+  
+  void displayBlink( int x, int color ) {
+    M5Cardputer.Display.fillCircle( x, 15, 10, color );
     utilLoopMillis = millis();
   }
-}
+  
+  void diskActivity( bool write = false ) {
+    if ( write ) {
+      displayBlink( 225, RED );
+    } else {
+      displayBlink( 200, GREEN );
+    }
+  }
+  
+  void utilLoop() {
+    if ( millis() > utilLoopMillis + 250 ) {
+      M5Cardputer.Display.fillCircle( 200, 15, 10, BLACK );
+      M5Cardputer.Display.fillCircle( 225, 15, 10, BLACK );
+      utilLoopMillis = millis();
+    }
+  }
 
 #endif

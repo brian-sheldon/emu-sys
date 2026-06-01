@@ -1,8 +1,9 @@
-#ifdef ESP32
+#ifdef ARDUINO
   extern "C" {
     #include "z80.h"
   }
-#else
+#endif
+#ifdef __linux__
   #include "z80.h"
 #endif
 
@@ -22,24 +23,30 @@ void do_cmd( char *cmd );
 
 static Z80 cpu;
 
-#define MEM_SIZE 0x10000
+#define EMU_MEM_SIZE 0x10000
 
-#ifdef ESP32 
+#ifdef ESP32
   #define MEM_TRACE_SIZE 0x4000
   #define CPU_TRACE_SIZE 0x4000
 #else
+//#endif
+//#ifdef PICO_ARCH_RP2040 || PICO_ARCH_RP2350 // why aren't these defined to be investigated
+  //#define MEM_TRACE_SIZE 0x10000
+  //#define CPU_TRACE_SIZE 0x10000
+//#endif
+//#ifdef __linux__
   #define MEM_TRACE_SIZE 0x10000
   #define CPU_TRACE_SIZE 0x10000
 #endif
 
 #define SYS_INP_QUEUE_SIZE 256
 
-const size_t memSize = MEM_SIZE;
-const size_t memMask = MEM_SIZE - 1;
+const size_t memSize = EMU_MEM_SIZE;
+const size_t memMask = EMU_MEM_SIZE - 1;
 const size_t dataSize = 0x100;
 const size_t dataMask = 0xff;
 
-uint8_t mem[ MEM_SIZE ];
+uint8_t mem[ EMU_MEM_SIZE ];
 uint8_t ports[256];
 
 //
@@ -79,31 +86,31 @@ char queue[ SYS_INP_QUEUE_SIZE ];
 //int drv = 0;
 int drvs[] = {0,1,2,3,4,5,6,7,8,9};
 #ifdef ESP32
-EmuDiskImg imgs[] = {
-  EmuDiskImg( "/emu/disks/cpm22-1.dsk" ),
-  EmuDiskImg( "/emu/disks/cpm22-2.dsk" ),
-  EmuDiskImg( "/emu/disks/8080tools.cpm" ),
-  EmuDiskImg( "/emu/disks/trek.cpm" ),
-  EmuDiskImg( "" ),
-  EmuDiskImg( "" ),
-  EmuDiskImg( "" ),
-  EmuDiskImg( "" ),
-  EmuDiskImg( "" ),
-  EmuDiskImg( "" )
-};
+  EmuDiskImg imgs[] = {
+    EmuDiskImg( "/emu/disks/cpm22-1.dsk" ),
+    EmuDiskImg( "/emu/disks/cpm22-2.dsk" ),
+    EmuDiskImg( "/emu/disks/8080tools.cpm" ),
+    EmuDiskImg( "/emu/disks/trek.cpm" ),
+    EmuDiskImg( "" ),
+    EmuDiskImg( "" ),
+    EmuDiskImg( "" ),
+    EmuDiskImg( "" ),
+    EmuDiskImg( "" ),
+    EmuDiskImg( "" )
+  };
 #else
-char *imgs[] = {
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  ""
-};
+  char *imgs[] = {
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  };
 #endif
 
 struct EmuDrive {
@@ -457,21 +464,23 @@ void cpu_frame() {
   if ( cpuState.running && cpuState.on ) {
     // begin time
     unsigned long delta = 0;
-    #ifdef ESP32
+    #ifdef ARDUINO
       unsigned long beg = 0;
       unsigned long end = 0;
       beg = micros();
-    #else
+    #endif
+    #ifdef __linux__
       struct timespec beg, end;
       clock_gettime( CLOCK_MONOTONIC, &beg );
     #endif
     ticks = steps( clocks );
     // end time
     if ( ticks > 30000 ) {
-      #ifdef ESP32
+      #ifdef ARDUINO
         end = micros();
         delta = end - beg;
-      #else
+      #endif
+      #ifdef __linux__
         clock_gettime( CLOCK_MONOTONIC, &end );
         long long seconds = end.tv_sec - beg.tv_sec;
         long long nanos = end.tv_nsec - beg.tv_nsec;
@@ -488,49 +497,4 @@ void cpu_frame() {
   }
   cpuState.frames++;
 }
-
-/*
-void loopEmu() {
-  int loopticks = 50000;
-  int loops = 10000;
-  while ( loops-- > 0 ) {
-    if ( cpuState.iowait ) {
-      if ( queuePos > 0 ) {
-        char ch = queue[0];
-        for ( int i = 1; i < queuePos; i++ ) {
-          queue[i-1] = queue[i];
-        }
-        queuePos--;
-        cpu.a = (int)ch & 0xff;
-        cpuState.iowait = false;
-      }
-    }
-    if ( running && ! cpuState.iowait ) {
-      if ( cpuState.stopset && cpuState.stopat == cpu.pc ) {
-        cpuState.stopped = true;
-      } else {
-        cpuState.stopped = false;
-        ticks = z80_step(&cpu);
-        loopticks = loopticks - ticks;
-        cpuState.ticks += ticks;
-        cpuState.steps++;
-      }
-    }
-  }
-  //
-  // calculate the Mhz
-  //
-  #ifdef ESP32
-  unsigned long currTime = micros();
-  unsigned long diffTime = currTime - lastTime;
-  long diffTicks = ticks - lastTicks;
-  if ( diffTime > 0.0 ) {
-    mhz = 1.0 * diffTicks / diffTime;
-  }
-  lastTime = currTime;
-  lastTicks = ticks;
-  #endif
-}
-*/
-
 

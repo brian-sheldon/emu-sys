@@ -77,7 +77,7 @@ void ctrlLoop( int len, char ch, int cc, char *hexStr ) {
           if ( cc == 3 ) {
             //println( "ctrl-c send to system ..." );
           }
-          #ifndef ESP32
+          #ifndef ARDUINO
             if ( ch == 0x0a ) {
               ch = 0x0d;
             }

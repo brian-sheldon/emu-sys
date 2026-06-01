@@ -3,30 +3,30 @@
 //
 // MIT License
 
-#ifndef ESP32
+#ifdef __linux__
+  
+  #include <stdio.h>
+  #include <stdbool.h>
+  #include <unistd.h>
+  #include <termios.h>
+  #include <string.h>
+  #include <time.h>
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <termios.h>
-#include <string.h>
-#include <time.h>
+  static struct termios old, new1;
+  void initTermios( int echo ) {
+    tcgetattr( 0, &old );
+    new1 = old;
+    new1.c_lflag &= ~( ICANON );  // add | ISIG to prevent exit signal
+    new1.c_lflag &= echo ? ECHO : ~ECHO;
+    new1.c_cc[VINTR] = 4;  // change exit signal from ctrl-c to ctrl-d
+    new1.c_cc[VMIN] = 0;
+    new1.c_cc[VTIME] = 0;
+    tcsetattr( 0, TCSANOW, &new1 );
+  }
 
-static struct termios old, new1;
-void initTermios( int echo ) {
-  tcgetattr( 0, &old );
-  new1 = old;
-  new1.c_lflag &= ~( ICANON );  // add | ISIG to prevent exit signal
-  new1.c_lflag &= echo ? ECHO : ~ECHO;
-  new1.c_cc[VINTR] = 4;  // change exit signal from ctrl-c to ctrl-d
-  new1.c_cc[VMIN] = 0;
-  new1.c_cc[VTIME] = 0;
-  tcsetattr( 0, TCSANOW, &new1 );
-}
-
-void resetTermios( void ) {
-  tcsetattr( 0, TCSANOW, &old );
-}
+  void resetTermios( void ) {
+    tcsetattr( 0, TCSANOW, &old );
+  }
 
 #endif
 
@@ -42,7 +42,7 @@ void resetTermios( void ) {
 
 void ioLoop() {
   const char ansiEnd[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~";
-  #ifdef ESP32
+  #ifdef ARDUINO
     if ( ! Serial.available() ) return;
   #endif
   int len = 0;
@@ -53,21 +53,23 @@ void ioLoop() {
   char hx[3];
   char hexStr[20] = "";
   bool ansi = false;
-  #ifdef ESP32
+  #ifdef ARDUINO
     int start = 0;
     int now = 0;
-  #else
+  #endif
+  #ifdef __linux__
     struct timespec start, now;
   #endif
   do {
-    #ifdef ESP32
+    #ifdef ARDUINO
       cc = Serial.read();
       if ( cc >= 0 ) {
         num = 1;
       } else {
         num = 0;
       }
-    #else
+    #endif
+    #ifdef __linux__
       num = read( 0, &buffer, 1 );
       if ( num > 0 ) {
         cc = buffer[0];
@@ -84,9 +86,10 @@ void ioLoop() {
       strcat( hexStr, hx );
       len++;
       if ( cc == 0x1b ) {
-        #ifdef ESP32
+        #ifdef ARDUINO
           start = micros();
-        #else
+        #endif
+        #ifdef __linux__
           clock_gettime( CLOCK_MONOTONIC, &start );
         #endif
         ansi = true;
@@ -96,10 +99,11 @@ void ioLoop() {
       }
     }
     if ( ansi ) {
-    #ifdef ESP32
+    #ifdef ARDUINO
       now = micros();
       if ( ( now - start ) > 30000 ) ansi = false;
-    #else
+    #endif
+    #ifdef __linux__
       clock_gettime( CLOCK_MONOTONIC, &now );
       if ( ( now.tv_nsec - start.tv_nsec ) > 30000 ) ansi = false;
     #endif

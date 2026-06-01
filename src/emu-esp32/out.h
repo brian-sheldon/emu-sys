@@ -6,40 +6,12 @@
 int printVPos = 0;
 bool printInEsc = false;
 void do_print( const char *str ) {
-  #ifdef ARDUINO_M5STACK_CARDPUTER
-  Serial.print( str );
-  #else
-  printf( "%s", str );
+  #ifdef ARDUINO
+    Serial.print( str );
   #endif
-  /*
-  char buffer[1500];
-  printInEsc = false;
-  int j = 0;
-  for ( int i = 0; i < 1499; i++ ) {
-    char ch = str[i];
-    if ( ch == '\0' ) {
-      break;
-    }
-    if ( printInEsc ) {
-      if ( ch == 'm' ) {
-        printInEsc = false;
-      }
-    } else {
-      if ( ch == '\x1b' ) {
-        printInEsc = true;
-      }
-      if ( ch == '\n' ) {
-        buffer[j] = '\0';
-        j = 0;
-        M5Cardputer.Display.println( buffer );
-      } else {
-        buffer[j++] = ch;
-      }
-    }
-  }
-  buffer[j] = '\0';
-  M5Cardputer.Display.print( buffer );
-  */
+  #ifdef __linux__
+    printf( "%s", str );
+  #endif
 }
 
 void print( String str ) {

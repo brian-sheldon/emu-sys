@@ -17,7 +17,7 @@
 
 #define STACK_SIZE 256
 #define DICT_SIZE  512
-#define MEM_SIZE   4096
+#define FORTH_MEM_SIZE   4096
 
 // Forth execution states
 typedef enum { STATE_INTERPRET, STATE_COMPILE } State;
@@ -44,7 +44,7 @@ int sp = 0;
 Word dict[DICT_SIZE];
 int dict_p = 0;
 
-unsigned char bytecode[MEM_SIZE];
+unsigned char bytecode[ FORTH_MEM_SIZE ];
 int here = 0;
 
 State state = STATE_INTERPRET;

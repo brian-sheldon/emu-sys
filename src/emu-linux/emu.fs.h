@@ -528,6 +528,8 @@ char *cpm_imgs[] = {
   "/emu/disks/8080tools.cpm",
   "/emu/disks/trek.cpm",
   "", "", "", "",
+  "/emu/disks/hd1.dsk",
+  "/emu/disks/hd2.dsk",
   "", "", "", "",
   "", "", "", ""
 };
@@ -540,7 +542,9 @@ char *cpm_imgs[] = {
   "../../sdcard/emu/disks/8080tools.cpm",
   "../../sdcard/emu/disks/trek.cpm",
   "", "", "", "",
-  "", "", "", "",
+  "../../sdcard/emu/disks/hd1.dsk",
+  "../../sdcard/emu/disks/hd2.dsk",
+  "", "",
   "", "", "", ""
 };
 
@@ -561,7 +565,21 @@ struct Mon_drv {
 
 struct Mon_drv mon_drvs[] = {
   { 0, 0, 1 },
-  { 1, 0, 1 }
+  { 1, 0, 1 },
+  { 2, 0, 1 },
+  { 3, 0, 1 },
+  { 4, 0, 1 },
+  { 5, 0, 1 },
+  { 6, 0, 1 },
+  { 7, 0, 1 },
+  { 8, 0, 1 },
+  { 9, 0, 1 },
+  { 10, 0, 1 },
+  { 11, 0, 1 },
+  { 12, 0, 1 },
+  { 13, 0, 1 },
+  { 14, 0, 1 },
+  { 15, 0, 1 }
 };
 
 struct Cpm {
@@ -579,6 +597,30 @@ struct Cpm {
 struct Cpm cpm = {
   77, 26, 128, 0, 1,
   2, 64, 32, 8
+};
+
+struct Cpm cpm_disk_fd = {
+  77,   // trks
+  26,   // secs
+  128,  // secsize
+  0,    // trk0
+  1,    // sec0
+  2,    // reserved
+  64,   // exts
+  32,   // extsize
+  8     // blksecs
+};
+
+struct Cpm cpm_disk_hd = {
+  255,  // trks
+  128,  // secs
+  128,  // secsize
+  0,    // trk0
+  1,    // sec0
+  0,    // reserved
+  1024, // exts
+  32,   // extsize
+  16    // blksecs
 };
 
 void print_cpm() {
@@ -613,52 +655,86 @@ int cpm_disk_log2sec_table[] = {
   16,22
 };
 
-int cpm_disk_log2sec( int trk, int log ) {
-  if ( trk < cpm.reserved ) return log;
-  return cpm_disk_log2sec_table[ log - cpm.sec0 ];
+int cpm_disk_log2sec( int drv, int trk, int log ) {
+  if ( drv == 8 || drv == 9 ) return log;
+  if ( trk < cpm_disk_fd.reserved ) return log;
+  return cpm_disk_log2sec_table[ log - cpm_disk_fd.sec0 ];
 }
 
-int cpm_disk_sec2log( int trk, int sec ) {
-  if ( trk < cpm.reserved ) return sec;
+int cpm_disk_sec2log( int drv, int trk, int sec ) {
+  if ( drv == 8 || drv == 9 ) return sec;
+  if ( trk < cpm_disk_fd.reserved ) return sec;
   int log = 0;
   for ( int i = 0; i < 26; i++ ) {
     if ( cpm_disk_log2sec_table[ i ] == sec ) {
-      log = i + cpm.sec0;
+      log = i + cpm_disk_fd.sec0;
       break;
     }
   }
   return log;
 }
 
-void cpm_disk_trklog2blksec( int trk, int log, int *blk, int *blksec ) {
-  int ztrk = trk - cpm.reserved;
+void cpm_disk_trklog2blksec( int drv, int trk, int log, int *blk, int *blksec ) {
+  int secs = cpm_disk_fd.secs;
+  int blksecs = cpm_disk_fd.blksecs;
+  int reserved = cpm_disk_fd.reserved;
+  if ( drv == 8 || drv == 9 ) {
+    secs = cpm_disk_hd.secs;
+    blksecs = cpm_disk_hd.blksecs;
+    reserved = cpm_disk_hd.reserved;
+  }
+  int ztrk = trk - reserved;
   int zsec = log - 1;
-  int abssec = ztrk * cpm.secs + zsec;
-  *blk = abssec / cpm.blksecs;
-  int zblksec = abssec % cpm.blksecs;
+  int abssec = ztrk * secs + zsec;
+  *blk = abssec / blksecs;
+  int zblksec = abssec % blksecs;
   *blksec = zblksec + 1;
-  //int sec = cpm_disk_log2sec( trk, log );
 }
 
-void cpm_disk_blksec2trklog( int blk, int blksec, int *trk, int *log ) {
+void cpm_disk_blksec2trklog( int drv, int blk, int blksec, int *trk, int *log ) {
+  int secs = cpm_disk_fd.secs;
+  int blksecs = cpm_disk_fd.blksecs;
+  int reserved = cpm_disk_fd.reserved;
+  if ( drv == 8 || drv == 9 ) {
+    secs = cpm_disk_hd.secs;
+    blksecs = cpm_disk_hd.blksecs;
+    reserved = cpm_disk_hd.reserved;
+  }
   int zblksec = blksec - 1;
-  int ztrk = ( blk * cpm.blksecs + zblksec ) / cpm.secs;
-  int zsec = ( blk * cpm.blksecs + zblksec ) % cpm.secs;
-  *trk = ztrk + cpm.reserved;
+  int ztrk = ( blk * blksecs + zblksec ) / secs;
+  int zsec = ( blk * blksecs + zblksec ) % secs;
+  *trk = ztrk + reserved;
   *log = zsec + 1;
-  //int sec = cpm_disk_log2sec( trk, log );
 }
 
-bool cpm_disk_isvalid( int trk, int sec ) {
-  bool res = ( trk >= cpm.trk0 );
-  res = res & ( trk < cpm.trks + cpm.trk0 );
-  res = res & ( sec >= cpm.sec0 );
-  res = res & ( sec < cpm.secs + cpm.sec0 );
+bool cpm_disk_isvalid( int drv, int trk, int sec ) {
+  int trks = cpm_disk_fd.trks;
+  int secs = cpm_disk_fd.secs;
+  int trk0 = cpm_disk_fd.trk0;
+  int sec0 = cpm_disk_fd.sec0;
+  if ( drv == 8 || drv == 9 ) {
+    trks = cpm_disk_hd.trks;
+    secs = cpm_disk_hd.secs;
+    trk0 = cpm_disk_hd.trk0;
+    sec0 = cpm_disk_hd.sec0;
+  }
+  bool res = ( trk >= trk0 );
+  res = res & ( trk < trks + trk0 );
+  res = res & ( sec >= sec0 );
+  res = res & ( sec < secs + sec0 );
   return res;
 }
 
-long int cpm_disk_pos( int trk, int sec ) {
-  long int pos = trk * cpm.secs * cpm.secsize + ( sec - cpm.sec0 ) * cpm.secsize;
+long int cpm_disk_pos( int drv, int trk, int sec ) {
+  int secs = cpm_disk_fd.secs;
+  int secsize = cpm_disk_fd.secsize;
+  int sec0 = cpm_disk_fd.sec0;
+  if ( drv == 8 || drv == 9 ) {
+    secs = cpm_disk_hd.secs;
+    secsize = cpm_disk_hd.secsize;
+    sec0 = cpm_disk_hd.sec0;
+  }
+  long int pos = trk * secs * secsize + ( sec - sec0 ) * secsize;
   return pos;
 }
 
@@ -671,12 +747,22 @@ long int cpm_disk_pos( int trk, int sec ) {
 //
 
 void mon_drv_next( int drv ) {
+  int trks = cpm_disk_fd.trks;
+  int secs = cpm_disk_fd.secs;
+  int trk0 = cpm_disk_fd.trk0;
+  int sec0 = cpm_disk_fd.sec0;
+  if ( drv == 8 || drv == 9 ) {
+    trks = cpm_disk_hd.trks;
+    secs = cpm_disk_hd.secs;
+    trk0 = cpm_disk_hd.trk0;
+    sec0 = cpm_disk_hd.sec0;
+  }
   mon_drvs[ drv ].log++;
-  if ( mon_drvs[ drv ].log > cpm.secs ) {
-    mon_drvs[ drv ].log = cpm.sec0;
+  if ( mon_drvs[ drv ].log > secs ) {
+    mon_drvs[ drv ].log = sec0;
     mon_drvs[ drv ].trk++;
-    if ( mon_drvs[ drv ].trk > cpm.trks ) {
-      mon_drvs[ drv ].trk = cpm.trk0;
+    if ( mon_drvs[ drv ].trk > trks ) {
+      mon_drvs[ drv ].trk = trk0;
     }
   }
 }
@@ -688,9 +774,9 @@ void print_cpm_disk_sec_info( int drv, int trk, int log ) {
   if ( log < 0 ) {
     log = mon_drvs[ drv ].log;
   }
-  int sec = cpm_disk_log2sec( trk, log );
+  int sec = cpm_disk_log2sec( drv, trk, log );
   int blk, blksec;
-  cpm_disk_trklog2blksec( trk, log, &blk, &blksec );
+  cpm_disk_trklog2blksec( drv, trk, log, &blk, &blksec );
   int img = mon_drvs[ drv ].img;
   char *path = cpm_imgs[ img ];
   printclr( colors[color].dump_label );
@@ -718,7 +804,11 @@ void print_cpm_disk_sec_info( int drv, int trk, int log ) {
   printclr( colors[color].dump_label );
   print( "blk: " );
   printclr( colors[color].dump_value );
-  if ( trk < cpm.reserved ) {
+  int reserved = cpm_disk_fd.reserved;
+  if ( drv == 8 || drv == 9 ) {
+    reserved = cpm_disk_hd.reserved;
+  }
+  if ( trk < reserved ) {
     print( "--:--" );
   } else {
     print( blk );
@@ -732,7 +822,11 @@ void print_cpm_disk_sec_info( int drv, int trk, int log ) {
   printclr( colors[color].dump_label );
   print( "  size: " );
   printclr( colors[color].dump_value );
-  print( cpm.secsize );
+  int secsize = cpm_disk_fd.secsize;
+  if ( drv == 8 || drv == 9 ) {
+    secsize = cpm_disk_hd.secsize;
+  }
+  print( secsize );
   printclr( colors[color].dump_label );
   print( "  chksum: " );
   printclr( colors[color].dump_value );
@@ -753,7 +847,7 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     img = cpm_drvs[ drv ];
   }
   char *path = cpm_imgs[ img ];
-  if ( cpm_disk_isvalid( trk, sec ) ) {
+  if ( cpm_disk_isvalid( drv, trk, sec ) ) {
     #ifdef ESP32
       File file;
       if ( write ) {
@@ -761,7 +855,7 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
       } else {
         file = SD.open( path, "r" );
       }
-      file.seek( cpm_disk_pos( trk, sec ) );
+      file.seek( cpm_disk_pos( drv, trk, sec ) );
       if ( write ) {
         file.write( data + addr, 128 );
         disk_wr_activity();
@@ -773,12 +867,12 @@ void cpm_disk_rw( bool write, bool mon, int drv, uint8_t *data, int addr, int tr
     #else
       FILE *fp;
       if ( write ) {
-        fp = fopen( path, "wb" );
+        fp = fopen( path, "r+b" );
       } else {
         fp = fopen( path, "rb" );
       }
       size_t res;
-      pos = cpm_disk_pos( trk, sec );
+      pos = cpm_disk_pos( drv, trk, sec );
       fseek( fp, pos, SEEK_SET );
       if ( write ) {
         res = fwrite( data + addr, 1, 128, fp );
@@ -834,21 +928,21 @@ void cpm_disk_rd_log( int drv, uint8_t *data, int addr, int trk, int log ) {
   } else {
     mon_drvs[ drv ].log = log;
   }
-  int sec = cpm_disk_log2sec( trk, log );
-  if ( cpm_disk_isvalid( trk, sec ) ) {
+  int sec = cpm_disk_log2sec( drv, trk, log );
+  if ( cpm_disk_isvalid( drv, trk, sec ) ) {
     cpm_disk_rw( false, true, drv, data, addr, trk, sec );
     mon_drv_next( drv );
   }
 }
 
 void cpm_disk_rd_sec( int drv, uint8_t *data, int addr, int trk, int sec ) {
-  if ( cpm_disk_isvalid( trk, sec ) ) {
+  if ( cpm_disk_isvalid( drv, trk, sec ) ) {
     cpm_disk_rw( false, false, drv, data, addr, trk, sec );
   }
 }
 
 void cpm_disk_wr_sec( int drv, uint8_t *data, int addr, int trk, int sec ) {
-  if ( cpm_disk_isvalid( trk, sec ) ) {
+  if ( cpm_disk_isvalid( drv, trk, sec ) ) {
     cpm_disk_rw( true, false, drv, data, addr, trk, sec );
   }
 }

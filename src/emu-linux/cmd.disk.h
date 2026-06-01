@@ -25,9 +25,9 @@ static void disk_drvs() {
     print( "drv: " );
     print( i );
     print( " img: " );
-    print( drvs[i] );
+    print( mon_drvs[i].img );
     print( " path: " );
-    //println( imgs[drvs[i]].getPath() );
+    println( cpm_imgs[ mon_drvs[i].img ] );
   }
 }
 
@@ -37,7 +37,7 @@ static void disk_img() {
     i = pnum( cmdline.p1, 10 );
   }
   if ( cmdline.plen > 2 ) {
-    //imgs[i].config( cmdline.p2 );
+    //_imgs[i].config( cmdline.p2 );
   }
   print( "img: " );
   print( i );
@@ -48,11 +48,11 @@ static void disk_img() {
 static void disk_imgs() {
   for ( int i = 0; i < 10; i++ ) {
     print( "drv: " );
-    print( drvs[i] );
+    print( mon_drvs[i].img );
     print( " img: " );
     print( i );
     print( " path: " );
-    //println( imgs[i].getPath() );
+    println( cpm_imgs[i] );
   }
 }
 
@@ -60,7 +60,7 @@ static void disk_disk_pos() {
   if ( cmdline.plen > 2 ) {
     int trk = pnum( cmdline.p1, 10 );
     int sec = pnum( cmdline.p2, 10 );
-    int pos = cpm_disk_pos( trk, sec );
+    int pos = cpm_disk_pos( drv, trk, sec );
     println( pos );
   }
 }
@@ -88,7 +88,7 @@ static void disk_trklog() {
     trk = pnum( cmdline.p1, 10 );
     if ( cmdline.plen > 2 ) {
       log = pnum( cmdline.p2, 10 );
-      cpm_disk_trklog2blksec( trk, log, &blk, &blksec );
+      cpm_disk_trklog2blksec( drv, trk, log, &blk, &blksec );
       print( "trk: " );
       print( trk );
       print( " log: " );
@@ -108,7 +108,7 @@ static void disk_blksec() {
     blk = pnum( cmdline.p1, 10 );
     if ( cmdline.plen > 2 ) {
       blksec = pnum( cmdline.p2, 10 );
-      cpm_disk_blksec2trklog( blk, blksec, &trk, &log );
+      cpm_disk_blksec2trklog( drv, blk, blksec, &trk, &log );
       print( "trk: " );
       print( trk );
       print( " log: " );
@@ -174,20 +174,20 @@ void test_cpm () {
   println( cpm.extsize );
   println( cpm.blksecs );
   println( "cpm_log2sec, cpm_sec2log ..." );
-  println( cpm_disk_log2sec( 2, 5 ) );
-  println( cpm_disk_sec2log( 2, 25 ) );
-  println( cpm_disk_log2sec( 1, 5 ) );
-  println( cpm_disk_sec2log( 1, 25 ) );
+  println( cpm_disk_log2sec( 0, 2, 5 ) );
+  println( cpm_disk_sec2log( 0, 2, 25 ) );
+  println( cpm_disk_log2sec( 0, 1, 5 ) );
+  println( cpm_disk_sec2log( 0, 1, 25 ) );
   println( "cpm_disk_isvalid ..." );
-  println( cpm_disk_isvalid ( 5, 5 ) );
-  println( cpm_disk_isvalid ( 5, 0 ) );
-  println( cpm_disk_isvalid ( 77, 5 ) );
-  println( cpm_disk_isvalid ( 0, 27 ) );
-  println( cpm_disk_isvalid ( 76, 26 ) );
+  println( cpm_disk_isvalid ( 0, 5, 5 ) );
+  println( cpm_disk_isvalid ( 0, 5, 0 ) );
+  println( cpm_disk_isvalid ( 0, 77, 5 ) );
+  println( cpm_disk_isvalid ( 0, 0, 27 ) );
+  println( cpm_disk_isvalid ( 0, 76, 26 ) );
   println( "cpm_disk_pos ..." );
-  println( cpm_disk_pos( 0, 1 ) );
-  println( cpm_disk_pos( 1, 1 ) );
-  println( cpm_disk_pos( 76, 26 ) );
+  println( cpm_disk_pos( 0, 0, 1 ) );
+  println( cpm_disk_pos( 0, 1, 1 ) );
+  println( cpm_disk_pos( 0, 76, 26 ) );
   println( "struct Mon_drv mon_drvs[] ..." );
   println( mon_drvs[0].img );
   println( mon_drvs[0].trk );
