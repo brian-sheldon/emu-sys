@@ -28,8 +28,8 @@ dis: dis.cpp
 cli: cli.cpp
 	$(CPP) $(CFLAGS) -o cli cli.cpp $(LDFLAGS)
 
-io: io.c
-	$(CC) $(CFLAGS) -o io io.c $(LDFLAGS)
+test_io: test_io.c
+	$(CC) $(CFLAGS) -o test_io test_io.c $(LDFLAGS)
 
 str: str.cpp
 	$(CPP) $(CFLAGS) -o str str.cpp $(LDFLAGS)

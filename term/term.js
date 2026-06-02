@@ -60,7 +60,7 @@ function listen() {
   process.stdin.setEncoding('utf8');
   
   console.log(`--- Serial Terminal: ${portConfig.path} @ ${portConfig.baudRate} ---`);
-  console.log('--- Press Ctrl+D to exit ---');
+  console.log('--- Press Ctrl-\\ to exit ---');
   
   // Pipe serial data to console
   port.pipe(process.stdout);
@@ -68,7 +68,7 @@ function listen() {
   // Pipe keyboard input to serial
   process.stdin.on('data', (key) => {
     // Exit application on Ctrl+D
-    if (key === '\u0004') {
+    if (key === '\u001c') {
         process.exit();
     }
     // Write raw key to serial

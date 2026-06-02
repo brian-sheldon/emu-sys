@@ -29,7 +29,7 @@ void loop() {
 
 int main() {
   
-  printf( "Press 'ctrl-d' to exit ...\n");
+  printf( "Press 'ctrl-\\' to exit ...\n");
   
   setup();
 

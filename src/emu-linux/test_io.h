@@ -19,7 +19,7 @@
     new1.c_lflag &= ~( ICANON );  // add | ISIG to prevent exit signal
     new1.c_lflag &= echo ? ECHO : ~ECHO;
     new1.c_cc[VQUIT] = _POSIX_VDISABLE;
-    new1.c_cc[VINTR] = 0x1c;  /* change exit signal from ctrl-c to ctrl-\ */
+    new1.c_cc[VINTR] = 0x1c;  // change exit signal from ctrl-c to ctrl-d
     new1.c_cc[VMIN] = 0;
     new1.c_cc[VTIME] = 0;
     tcsetattr( 0, TCSANOW, &new1 );
@@ -106,8 +106,9 @@ void ioLoop() {
     }
   } while ( ansi );
   if ( len > 0 ) {
-    if ( show_hex ) println( hexStr );
-    ctrlLoop( len, ch, cc, hexStr );
+    bool show_hex = true;
+    if ( show_hex ) printf( "%s\n", hexStr );
+    //ctrlLoop( len, ch, cc, hexStr );
   }
 }
 

@@ -1,5 +1,5 @@
 
-#include "./io.h"
+#include "./test_io.h"
 
 int main() {
   initTermios( 0 );
