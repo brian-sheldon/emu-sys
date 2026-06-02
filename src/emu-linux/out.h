@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #define print(x) _Generic((x), \
+  const char*: print_ccstr,     \
   char*: print_cstr,           \
   bool: print_int,              \
   int: print_int,              \
@@ -21,12 +22,17 @@
   default: print_none          \
 )(x)
 
+void print_ccstr( const char *str ) {
+  printf( "%s", str );
+  fflush( stdout );
+}
+
 void print_cstr( char *str ) {
   printf( "%s", str );
   fflush( stdout );
 }
 
-void print_int( long long v ) {
+void print_int( int v ) {
   printf( "%d", v );
   //printf( "%ll", v );
   fflush( stdout );

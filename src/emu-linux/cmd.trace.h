@@ -33,12 +33,12 @@ void trace_cpu_show() {
   if ( cmdline.plen > 3 ) {
     over = pnum( cmdline.p3, 10 ) & 0xffff;
   }
-  size_t next = 0;
-  for ( size_t addr = 0; addr < traceCpuLen; addr++ ) {
+  int next = 0;
+  for ( int addr = 0; addr < traceCpuLen; addr++ ) {
     if ( addr >= beg && addr <= end ) {
       int count = traceCpu[addr];
       if ( count > over ) {
-        size_t realaddr = traceCpuStart + addr;
+        int realaddr = traceCpuStart + addr;
         if ( realaddr != next ) {
           print( colors[color].dis_label );
           print( "       pc_" );
@@ -84,13 +84,13 @@ void trace_mem_show() {
   if ( cmdline.plen > 3 ) {
     min = pnum( cmdline.p3, 10 ) & 0xffff;
   }
-  size_t prev = 0;
-  for ( size_t addr = 0; addr < traceMemLen; addr++ ) {
+  int prev = 0;
+  for ( int addr = 0; addr < traceMemLen; addr++ ) {
     if ( addr >= beg && addr <= end ) {
       int rd = traceMemRd[addr];
       int wr = traceMemWr[addr];
       int rw = rd + wr;
-      size_t realaddr = traceMemStart + addr;
+      int realaddr = traceMemStart + addr;
       if ( rw != 0 ) {
         if ( realaddr != prev + 1 ) {
           print( "pc_" );

@@ -57,7 +57,7 @@ void push(int val) {
 }
 
 int pop() {
-    if (sp <= 0) { println( "Stack Underflow" ); return NULL; }
+    if (sp <= 0) { println( "Stack Underflow" ); return 0; }
     return stack[--sp];
 }
 
@@ -100,6 +100,7 @@ void execute_bytecode(int addr) {
             case OP_DROP: pop(); break;
             case OP_EMIT: printch( pop() ); break;
             case OP_DOT:  print( pop() ); break;
+            case OP_DOTX: print( hex0( pop(), 0 ) ); break;
         }
     }
 }
@@ -131,7 +132,7 @@ void process_token(char *token) {
             }
         } else {
             // Assume Token is a raw literal number to compile
-            char *end;
+            //char *end;
             int val = pnum( token, 16 );
             //println( val );
             //println( sizeof( int ) );
@@ -182,7 +183,7 @@ void process_token(char *token) {
             }
         } else {
             // Evaluate interpreted integer numbers
-            char *end;
+            //char *end;
             int val = pnum( token, 16 );
             //if ( val == '\0') {
                 push(val);

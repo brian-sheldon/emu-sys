@@ -53,23 +53,23 @@ uint8_t ports[256];
 // Trace vars and funcs
 //
 
-const size_t traceCpuLen = CPU_TRACE_SIZE;
-uint16_t traceCpuStart = 0x0000;
+const int traceCpuLen = CPU_TRACE_SIZE;
+int traceCpuStart = 0x0000;
 uint8_t traceCpu[ CPU_TRACE_SIZE ];
 
-const size_t traceMemLen = MEM_TRACE_SIZE;
-uint16_t traceMemStart = 0x0000;
+const int traceMemLen = MEM_TRACE_SIZE;
+int traceMemStart = 0x0000;
 uint8_t traceMemRd[ MEM_TRACE_SIZE ];
 uint8_t traceMemWr[ MEM_TRACE_SIZE ];
 
 void traceCpuClr() {
-  for ( size_t i = 0; i < traceCpuLen; i++ ) {
+  for ( int i = 0; i < traceCpuLen; i++ ) {
     traceCpu[i] = 0;
   }
 }
 
 void traceMemClr() {
-  for ( size_t i = 0; i < traceMemLen; i++ ) {
+  for ( int i = 0; i < traceMemLen; i++ ) {
     traceMemRd[i] = 0;
     traceMemWr[i] = 0;
   }

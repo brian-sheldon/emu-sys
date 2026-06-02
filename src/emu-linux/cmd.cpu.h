@@ -261,9 +261,7 @@ void cpu_steps( int loops, bool each, long delay ) {
 
 void cpu_step() {
   bool each = false;
-  int loop = 0;
   int loops = 1;
-  int ticks = 0;
   int delay = 0;
   if ( cmdline.plen > 1 ) {
     loops = pnum( cmdline.p1, 10 );

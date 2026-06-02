@@ -21,7 +21,7 @@
 #endif
 
 static void main_version() {
-  println( "Version: 0.4.0-alpha" );
+  println( "Version: 0.4.1" );
 }
 
 static void main_debug_on() {
