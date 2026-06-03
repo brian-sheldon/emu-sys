@@ -475,11 +475,29 @@ void disk_rd_activity() {}
 
 void disk_wr_activity() {}
 
-void disk_load_bin( uint8_t *data, size_t size, size_t addr, char *path ) {
+int disk_file_size( char *path ) {
+  int filesize = 0;
   #ifdef ESP32
     File file = SD.open( path, "r" );
-    size_t filesize = file.size();
-    if ( ( addr + filesize ) < size ) {
+    filesize = file.size();
+    file.close();
+  #endif
+  #ifdef __linux__
+    FILE *fp;
+    fp = fopen( path, "rb" );
+    fseek( fp, 0, SEEK_END );
+    filesize = ftell( fp );
+    fclose( fp );
+  #endif
+  return filesize;
+}
+
+int disk_load_bin( uint8_t *data, size_t size, size_t addr, char *path ) {
+  #ifdef ESP32
+    File file = SD.open( path, "r" );
+    int filesize = file.size();
+    int end = addr + filesize;
+    if ( end < size ) {
       file.seek( 0 );
       file.read( data + addr, size );
       print( "Binary size: " );
@@ -499,7 +517,8 @@ void disk_load_bin( uint8_t *data, size_t size, size_t addr, char *path ) {
     fseek( fp, 0, SEEK_END );
     int filesize = ftell( fp );
     rewind( fp );
-    if ( ( addr + filesize ) < size ) {
+    int end = addr + filesize;
+    if ( ( addr + filesize ) <= size ) {
       fread( data + addr, 1, size, fp );
       print( "Binary size: " );
       print( filesize );
@@ -514,6 +533,7 @@ void disk_load_bin( uint8_t *data, size_t size, size_t addr, char *path ) {
     fclose( fp );
   #endif
   disk_rd_activity();
+  return end;
 }
 
 //

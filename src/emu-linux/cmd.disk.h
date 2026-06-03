@@ -121,6 +121,31 @@ static void disk_blksec() {
   }
 }
 
+void disk_cmp() {
+  int addr = 0;
+  if ( cmdline.plen > 1 ) {
+    char *path = cmdline.p1;
+    if ( cmdline.plen > 2 ) {
+      addr = pnum( cmdline.p2, 16 );
+    }
+    int filesize = disk_file_size( path );
+    uint8_t *buffer = (uint8_t *)malloc( filesize * sizeof(uint8_t) );
+    disk_load_bin( buffer, filesize, 0, path );
+    for ( int i = 0; i < filesize; i++ ) {
+      if ( buffer[i] != mem[ addr + i ] ) {
+        print( i );
+        print( " : " );
+        print( addr + i );
+        print( " : " );
+        print( buffer[i] );
+        print( " : " );
+        println( mem[ addr + i ] );
+      }
+    }
+    free( buffer );
+  }
+}
+
 void disk_load() {
   int addr = 0;
   if ( cmdline.plen > 1 ) {
@@ -128,7 +153,9 @@ void disk_load() {
     if ( cmdline.plen > 2 ) {
       addr = pnum( cmdline.p2, 16 );
     }
-    disk_load_bin( mem, sizeof( mem ), addr, path );
+    int pages = disk_load_bin( mem, sizeof( mem ), addr, path );
+    print( "CP/M SAVE command pages: " );
+    println( pages );
   }
 }
 
@@ -212,6 +239,7 @@ cmd_entry_t cmds_disk[] = {
   { "trklog", disk_trklog, "trk logsec", "get blk blksec from trk logsec" },
   { "blksec", disk_blksec, "blk blksec", "get trk logsec from blk blksec" },
   { "load", disk_load, "path [addr]", "load rom/bin into memory at addr" },
+  { "cmp", disk_cmp, "path [addr]", "compare bin with memory" },
   { "trs", disk_trs, "path [addr]", "trs load and patch" },
   { "patch", disk_patch, "", "patches model1.rom to redirect io to serial" },
 

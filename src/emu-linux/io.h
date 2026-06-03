@@ -16,9 +16,11 @@
   void initTermios( int echo ) {
     tcgetattr( 0, &old );
     new1 = old;
-    new1.c_lflag &= ~( ICANON );  // add | ISIG to prevent exit signal
+    new1.c_lflag &= ~( ICANON | IXON );  // add | ISIG to prevent exit signal
     new1.c_lflag &= echo ? ECHO : ~ECHO;
     new1.c_cc[VQUIT] = _POSIX_VDISABLE;
+    new1.c_cc[VSTOP] = _POSIX_VDISABLE;
+    new1.c_cc[VSTART] = _POSIX_VDISABLE;
     new1.c_cc[VINTR] = 0x1c;  /* change exit signal from ctrl-c to ctrl-\ */
     new1.c_cc[VMIN] = 0;
     new1.c_cc[VTIME] = 0;

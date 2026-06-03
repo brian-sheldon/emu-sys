@@ -38,7 +38,7 @@ void ctrl_home() {
   println( "cpu: off" );
 }
 
-void ctrl_z() {
+void ctrl_1d() {
   show_hex = ! show_hex;
 }
 
@@ -49,7 +49,7 @@ cmd_entry_t cmds_ctrl[] = {
   { "1b5b347e", ctrl_end, "End", "turn cpu on" },
   { "1b5b48", ctrl_home, "Home", "turn cpu off" },
   { "1b5b317e", ctrl_home, "Home", "turn cpu off" },
-  { "1a", ctrl_z, "ctrl-z", "toggle show hex" },
+  { "1d", ctrl_1d, "ctrl-]", "Toggle show keys as hex" },
   { NULL, NULL, NULL, NULL }
 };
 
