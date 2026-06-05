@@ -123,8 +123,11 @@ void cli_default( int len, char ch, int cc, char *hexStr ) {
 cmd_entry_t cmds_cli[] = {
   { "0a", cli_enter, "", "Enter" }, // linux
   { "0d", cli_enter, "", "Enter" }, // arduino
+  { "08", cli_backspace, "", "Backspace" },
   { "7f", cli_backspace, "", "Backspace" },
+  { "13", cli_leftarrow, "", "Left Arrow" },
   { "1b5b44", cli_leftarrow, "", "Left Arrow" },
+  { "04", cli_rightarrow, "", "Right Arrow" },
   { "1b5b43", cli_rightarrow, "", "Right Arrow" },
   { NULL, NULL, NULL, NULL }
 };

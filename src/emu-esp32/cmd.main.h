@@ -94,6 +94,14 @@ static void main_colors() {
   println( "\x1b[1;37mBright: 1 Color: 7" );
 }
 
+static void main_keys() {
+  println( "ctrl-\\ to exit" );
+  println( "f12 toggle io between monitor and system" );
+  println( "f10 toggle keymap" );
+  println( "f9 toggle backspace key 0x08 or 0x7f" );
+  println( "ctrl-] toggle show keycode as hex" );
+}
+
 static void help();
 static void words();
 
@@ -108,6 +116,7 @@ cmd_entry_t cmds_main[] = {
   { "ruleron", main_ruleron, "", "ruler on for every cmd" },
   { "ruleroff", main_ruleroff, "", "ruler off" },
   { "colors", main_colors, "", "display colors" },
+  { "keys", main_keys, "", "key functions" },
   { "help", help, "", "detailed help for all commands" },
   { "words", words, "", "list all commands" },
   { NULL, NULL, NULL, NULL }

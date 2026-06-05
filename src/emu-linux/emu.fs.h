@@ -536,71 +536,8 @@ int disk_load_bin( uint8_t *data, size_t size, size_t addr, char *path ) {
   return end;
 }
 
-//
-// cp/m disk img
-//
 
-#ifdef ESP32
 
-char *cpm_imgs[] = {
-  "/emu/disks/cpm22-1.dsk",
-  "/emu/disks/cpm22-2.dsk",
-  "/emu/disks/8080tools.cpm",
-  "/emu/disks/trek.cpm",
-  "", "", "", "",
-  "/emu/disks/hd1.dsk",
-  "/emu/disks/hd2.dsk",
-  "", "", "", "",
-  "", "", "", ""
-};
-
-#else
-
-char *cpm_imgs[] = {
-  "../../sdcard/emu/disks/cpm22-1.dsk",
-  "../../sdcard/emu/disks/cpm22-2.dsk",
-  "../../sdcard/emu/disks/8080tools.cpm",
-  "../../sdcard/emu/disks/trek.cpm",
-  "", "", "", "",
-  "../../sdcard/emu/disks/hd1.dsk",
-  "../../sdcard/emu/disks/hd2.dsk",
-  "", "",
-  "", "", "", ""
-};
-
-#endif
-
-int cpm_drvs[] = {
-  0, 1, 2, 3,
-  4, 5, 6, 7,
-  8, 9, 10, 11,
-  12, 13, 14, 15
-};
-
-struct Mon_drv {
-  int img;
-  int trk;
-  int log;
-};
-
-struct Mon_drv mon_drvs[] = {
-  { 0, 0, 1 },
-  { 1, 0, 1 },
-  { 2, 0, 1 },
-  { 3, 0, 1 },
-  { 4, 0, 1 },
-  { 5, 0, 1 },
-  { 6, 0, 1 },
-  { 7, 0, 1 },
-  { 8, 0, 1 },
-  { 9, 0, 1 },
-  { 10, 0, 1 },
-  { 11, 0, 1 },
-  { 12, 0, 1 },
-  { 13, 0, 1 },
-  { 14, 0, 1 },
-  { 15, 0, 1 }
-};
 
 struct Cpm {
   int trks;
